@@ -65,6 +65,7 @@ export default async function PostPage({ params }: Params) {
         ) : null}
       </header>
       {content}
+      <p className="text-sm text-foreground/40 font-bold text-sm text-center pt-8">~ FIN ~</p>
     </article>
   );
 }

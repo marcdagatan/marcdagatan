@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import StagewiseDevToolbar from "@/components/stagewise-dev-toolbar";
 
 const geistMono = Geist_Mono({
@@ -68,6 +69,7 @@ export default function RootLayout({
           <StagewiseDevToolbar />
           <SiteHeader />
           <div className="mx-auto max-w-[1100px] px-4 py-10">{children}</div>
+          <SiteFooter />
         </ThemeProvider>
       </body>
     </html>
