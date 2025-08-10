@@ -1,0 +1,60 @@
+---
+globs: content/posts/*.mdx
+alwaysApply: false
+---
+# Instruction Set — “Write Like Marc Dagatan”
+
+When writing blog content for Marc Dagatan:
+
+---
+
+## Tone & Personality
+
+- Speak with confidence, self-assurance, and a natural conversational flow.
+- Blend sharp insights with warmth and approachability.
+- Use wit, dry humor, and occasional playful sarcasm — never forced.
+- Write from lived experience and speak directly to the reader, as if talking to a smart friend who can handle blunt truths.
+- Avoid sugarcoating; be direct, even if a point is a little uncomfortable.
+
+---
+
+## Style & Structure
+
+- **Hook fast**: Start with a punchy statement, relatable truth, or bold observation.
+- Vary sentence length; mix short, impactful bursts with longer, smooth sentences for rhythm.
+- Use conversational connectors (*Look.*, *Here’s the thing.*, *Now…*) and rhetorical questions to draw readers in.
+- Highlight key points with formatting (bold, italics, lists) or isolate them for emphasis.
+- Keep paragraphs tight and purposeful — no filler or meandering.
+
+---
+
+## Content Approach
+
+- Prioritize authenticity over “content creator” fluff.
+- Use personal stories, quick anecdotes, or real-world examples whenever possible.
+- Don’t shy away from contrarian or fresh takes on common topics.
+- Strip away anything that doesn’t serve the idea or vibe.
+- End with a thought-provoking takeaway, challenge, or nudge toward action.
+
+---
+
+## Avoid
+
+- Corporate jargon, hollow motivational clichés, or fake hype.
+- Overexplaining obvious points.
+- Trying too hard to be funny — let it happen naturally.
+- Anything that feels templated, generic, or inauthentic.
+
+---
+
+## MDX Output Requirements
+
+- All blog posts must be returned as valid **MDX** files.
+- At the top of the file, include frontmatter with the following fields:
+
+  ```md
+  ---
+  title: "Post Title Here"
+  date: YYYY-MM-DD
+  description: "1–2 sentence summary of the post."
+  ---

@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeInlineCodeToPre from "@/lib/rehype-inline-code-to-pre";
 
 type Params = { params: Promise<{ slug: string }> };
 
@@ -36,6 +37,7 @@ export default async function PostPage({ params }: Params) {
         rehypePlugins: [
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: "wrap" }],
+          rehypeInlineCodeToPre,
           [
             rehypePrettyCode,
             {
@@ -53,11 +55,13 @@ export default async function PostPage({ params }: Params) {
     <article className="prose max-w-none">
       <header className="mb-8">
         <h1>{meta.title}</h1>
-        <time className="text-sm text-foreground/60" dateTime={meta.date}>
-          {new Date(meta.date).toLocaleDateString(undefined, {
+        <time className="text-sm text-foreground/60" dateTime={meta.dateISO}>
+          {new Date(meta.timestamp).toLocaleString(undefined, {
             year: "numeric",
             month: "long",
             day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
           })}
         </time>
         {meta.description ? (
@@ -65,7 +69,7 @@ export default async function PostPage({ params }: Params) {
         ) : null}
       </header>
       {content}
-      <p className="text-sm text-foreground/40 font-bold text-sm text-center pt-8">~ FIN ~</p>
+      <p className="text-sm text-foreground/40 font-bold text-center pt-8">~ FIN ~</p>
     </article>
   );
 }

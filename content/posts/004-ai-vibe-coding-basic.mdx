@@ -1,0 +1,325 @@
+---
+title: "AI Vibe Coding for the Uninitiated"
+date: "2025-08-11 1:15 AM"
+description: "A beginner’s on-ramp to jamming with AI—fast sketches, real guardrails, and code you won’t be ashamed to keep."
+---
+
+## Let’s Get This Straight
+
+“AI vibe coding” isn’t wizardry. It’s you, your editor, and a hyperactive pair partner who never gets tired and will happily produce a thousand lines of “okay-ish” code if you let it. You don’t bring AI in to _finish_ the work—you bring it in to _accelerate_ the figuring-it-out stage. The sketchbook phase. The part where you don’t know if your hunch even holds water.
+
+Used well, this is jet fuel. Used poorly, it’s a shortcut to a codebase that smells like a food court. The difference is ownership. You lead. The bot follows.
+
+---
+
+## The Setup That Keeps You Safe While You Play
+
+Vibe sessions live in isolation. Not because your ideas are bad, but because creative chaos should never land on `main` by accident. Start every session by giving yourself permission to be messy _over there_, while keeping shipped code boring _over here_.
+
+```bash
+# start clean
+git switch -c ai-spike/prerender-chart-hover
+# optional: ensure nothing leaks to prod
+echo "NEXT_PUBLIC_VIBE=1" > .env.local
+```
+
+Then wire a tiny gate in your app so experimental paths are explicit:
+
+```tsx
+// app/Widget.tsx
+const vibeMode = process.env.NEXT_PUBLIC_VIBE === "1";
+
+export function Widget() {
+  if (vibeMode) {
+    return <VibeChartDemo />; // loud playground
+  }
+  return <StableWidget />; // shipped path
+}
+```
+
+This isn’t bureaucracy. It’s you telling future-you: “Relax, the wild stuff is fenced in.”
+
+---
+
+## Talk To The Model Like A Teammate Who Ships Minis, Not Epics
+
+Beginners go wrong by asking for whole apps. Don’t. Ask for _a single, minimal proof_ of the thing you’re testing. You’re not outsourcing thinking; you’re delegating the first draft.
+
+Here’s a prompt I actually use for the “pre-render then hydrate on hover” idea:
+
+```text
+You are my pair programmer. Produce a minimal Next.js example that pre-renders a static SVG bar chart (server) and hydrates a tooltip on bar hover (client).
+Constraints:
+- One React component, <= 80 lines.
+- No external chart libs; vanilla SVG.
+- Include a tiny in-memory dataset.
+- Export a <VibeChartDemo /> ready to drop in.
+Explain tradeoffs after the code in 3-5 sentences.
+```
+
+Notice the shape: specific, scoped, opinionated. You’re steering.
+
+---
+
+## A First Draft You Can Actually Run
+
+What a decent model will give back (edited here to be tight and readable):
+
+```tsx
+// components/VibeChartDemo.tsx
+"use client";
+
+import { useMemo, useState } from "react";
+
+type Point = { label: string; value: number };
+
+export default function VibeChartDemo() {
+  // tiny in-memory dataset so we don't wait on APIs
+  const data: Point[] = useMemo(
+    () => [
+      { label: "Mon", value: 12 },
+      { label: "Tue", value: 18 },
+      { label: "Wed", value: 7 },
+      { label: "Thu", value: 14 },
+      { label: "Fri", value: 20 },
+    ],
+    []
+  );
+
+  const [hover, setHover] = useState<Point | null>(null);
+
+  const width = 360;
+  const height = 160;
+  const padding = 24;
+  const max = Math.max(...data.map((d) => d.value));
+  const barW = (width - padding * 2) / data.length;
+
+  return (
+    <div className="p-4 border rounded grid gap-2">
+      <svg width={width} height={height} role="img" aria-label="Weekly totals" className="bg-white">
+        {data.map((d, i) => {
+          const h = Math.round((d.value / max) * (height - padding * 2));
+          const x = padding + i * barW;
+          const y = height - padding - h;
+          return (
+            <g key={d.label} onMouseEnter={() => setHover(d)} onMouseLeave={() => setHover(null)}>
+              <rect x={x} y={y} width={barW * 0.8} height={h} />
+              <text x={x + barW * 0.4} y={height - padding / 2} textAnchor="middle" fontSize="10">
+                {d.label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+
+      <div className="text-sm h-6" aria-live="polite">
+        {hover ? `Hovered: ${hover.label} = ${hover.value}` : "Hover a bar"}
+      </div>
+    </div>
+  );
+}
+```
+
+Is this production-ready? No. Is it a clean sketch proving the interaction works? Yes. That’s the goal.
+
+---
+
+## Make The Model Explain Itself (This Is Where You Learn)
+
+Beginners skip this part and it shows. Ask the model _why_ it chose this approach and where it would break. If it can’t explain concisely, you’re holding a guess, not a solution.
+
+```text
+Explain the tradeoffs you made in this component.
+Where does it fall over with large datasets?
+What is the smallest refactor to make it keyboard-accessible?
+```
+
+Then push it further. Accessibility refactor, same constraints:
+
+```text
+Refactor to support keyboard focus + tooltip via focus/blur (no mouse required).
+Keep under 90 lines. Minimal styles.
+```
+
+Expect something like:
+
+```tsx
+// focusable bars + aria-describedby for tooltip target
+// adds tabIndex and onFocus/onBlur, keeps the rest intact
+```
+
+Now you’re not just copying—you’re directing.
+
+---
+
+## Humanizing AI Output (The “Keep, Clean, Kill” Pass)
+
+You are responsible for anything you merge. That means naming things, deleting noise, and turning magic numbers into meaning. Small example:
+
+```ts
+// before (AI raw)
+const x = arr.map((a) => a * 1.2); // add tax
+
+// after (yours)
+const TAX_MARKUP_RATIO = 1.2;
+const pricesWithTax = prices.map((price) => price * TAX_MARKUP_RATIO);
+```
+
+Or tightening the chart math so intent is obvious:
+
+```ts
+// before
+const barW = (width - padding * 2) / data.length;
+
+// after
+const innerWidth = width - padding * 2;
+const BAR_SPACING_RATIO = 0.8;
+const barWidth = innerWidth / data.length;
+const barInnerWidth = barWidth * BAR_SPACING_RATIO;
+```
+
+Clarity compounds. Future-you will not file a complaint.
+
+---
+
+## Use AI For Tests—Then Break Them Without Mercy
+
+Even if you’re new to testing, you can ask the model to scaffold a smoke test. Keep it tiny, run it, then _intentionally_ break the code and watch the test fail. That’s how you build trust.
+
+```ts
+// __tests__/VibeChartDemo.test.tsx
+import { render, screen, fireEvent } from "@testing-library/react";
+import VibeChartDemo from "../components/VibeChartDemo";
+
+test("shows hover text when a bar is focused", () => {
+  render(<VibeChartDemo />);
+  const bars = screen.getAllByRole("img")[0].querySelectorAll("rect");
+  expect(bars.length).toBeGreaterThan(0);
+  fireEvent.focus(bars[0] as unknown as Element);
+  expect(screen.getByText(/Hovered:/)).toBeInTheDocument();
+});
+```
+
+Then ask the model to explain its test choices. Keep what you understand; simplify what you don’t.
+
+---
+
+## Fake Your Data To Stay In Flow
+
+Waiting on an API is how vibe dies. Keep a tiny dataset handy so you can iterate logic and UI fast:
+
+```ts
+// lib/fakes.ts
+export const demoWeek = [
+  { label: "Mon", value: 12 },
+  { label: "Tue", value: 18 },
+  { label: "Wed", value: 7 },
+  { label: "Thu", value: 14 },
+  { label: "Fri", value: 20 },
+] as const;
+
+export type DemoPoint = (typeof demoWeek)[number];
+```
+
+Swap in the real thing later. You’re buying momentum now, not fidelity.
+
+---
+
+## One Debug Pipe You Can Silence
+
+Noise kills signal. Keep a single gated logger you can nuke in one move:
+
+```ts
+// lib/debug.ts
+const VIBE_DEBUG = process.env.NEXT_PUBLIC_VIBE_DEBUG === "1";
+
+export function debug(...args: unknown[]) {
+  if (VIBE_DEBUG) console.log("vibe:", ...args);
+}
+```
+
+Use it sparingly:
+
+```ts
+import { debug } from "@/lib/debug";
+debug("hover", hover);
+```
+
+Flip the env var off, ship the peace and quiet.
+
+---
+
+## From Spike To “Boring, Good Code” In One Pass
+
+When the experiment pays off, keep the useful slice and throw the rest away. Extract the chart into a boring, well-named component and wire it through a boring, well-named API. Boring is a compliment here.
+
+```tsx
+// components/Chart.tsx
+"use client";
+import { memo } from "react";
+import type { DemoPoint } from "@/lib/fakes";
+
+type Props = { points: DemoPoint[]; width?: number; height?: number };
+
+function ChartBase({ points, width = 360, height = 160 }: Props) {
+  // ...same logic, now decoupled from the vibe demo wrapper
+  return (
+    <svg width={width} height={height}>
+      {/* bars */}
+    </svg>
+  );
+}
+
+export const Chart = memo(ChartBase);
+```
+
+Commit like an adult:
+
+```bash
+git add .
+git commit -m "feat(chart): static svg + hover hydration; extracted to <Chart/> w/ fake data"
+```
+
+Notice there’s no “AI” in the message. You own the change.
+
+---
+
+## When The Bot Is Confident And Wrong (It Happens)
+
+Sometimes you’ll get a polished answer that’s subtly off—wrong lifecycle hook, misread of framework behavior, or a stale pattern. Your job isn’t to spot _every_ mistake; it’s to spot the _shape_ of risk and press for clarity.
+
+Ask directly:
+
+```text
+Your solution re-renders the entire SVG on hover. What’s the smallest change to isolate updates to the hovered bar only? Avoid useMemo overkill; prefer structural changes.
+```
+
+You’re not being hostile. You’re being specific. The model will either cave (good: it learned) or double down (also good: you know to rewrite).
+
+---
+
+## Clean Exit Scripts Save You Tomorrow
+
+End every vibe session with a ten-minute sweep. If you’re keeping it, polish. If you’re tossing it, **really** toss it.
+
+A tiny `npm` script helps:
+
+```json
+// package.json
+{
+  "scripts": {
+    "vibe:off": "cross-env NEXT_PUBLIC_VIBE=0 NEXT_PUBLIC_VIBE_DEBUG=0 next build",
+    "vibe:clean": "git branch --list 'ai-spike/*' | xargs -n 1 git branch -D"
+  }
+}
+```
+
+Run, verify, move on.
+
+---
+
+## The Quiet Truth
+
+AI vibe coding is not about speed for its own sake. It’s about **shortening the distance** between “I wonder if…” and “I know.” You explore _with_ the model, you learn _from_ the model, but you always ship _as_ yourself. The bot can draft. You decide. That’s the whole game.
+
+When you’re new to this, that’s enough. Keep your playground fenced. Ask for minimal examples. Make the model explain itself. Humanize the code before it meets the rest of your repo. If that sounds boring—good. Boring is what survives.

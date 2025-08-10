@@ -26,11 +26,13 @@ export default function BlogIndex() {
               {post.description ? (
                 <p className="text-sm text-foreground/70">{post.description}</p>
               ) : null}
-              <time className="text-xs text-foreground/50" dateTime={post.date}>
-                {new Date(post.date).toLocaleDateString(undefined, {
+              <time className="text-xs text-foreground/50" dateTime={post.dateISO}>
+                {new Date(post.timestamp).toLocaleString(undefined, {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </time>
             </article>
