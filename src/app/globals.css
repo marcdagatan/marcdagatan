@@ -94,6 +94,7 @@ h2 { font-weight: 700; }
   background: hsl(0 0% 12%);
   padding: 1rem;
   overflow-x: auto;
+  overflow-y: visible;
   white-space: pre;
   -webkit-overflow-scrolling: touch;
 }
@@ -145,11 +146,13 @@ h2 { font-weight: 700; }
 @media (max-width: 767px) {
   :where(figure[data-rehype-pretty-code-figure]) {
     overflow-x: scroll;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-x;
   }
   :where(pre) {
     overflow-x: scroll;
+    overflow-y: visible;
     -webkit-overflow-scrolling: touch;
     white-space: pre;
     touch-action: pan-x;
