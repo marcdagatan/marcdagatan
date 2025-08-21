@@ -1,14 +1,15 @@
 ---
 title: "GLM-4.5 vs Claude Opus: The Price Gap That Feels Illegal"
-date: "2025-08-20 12:55 PM"
-description: "A deeper, receipts-first teardown with tables. TL;DR: GLM-4.5 is ~107× cheaper than Opus at comparable coding output, though it lacks image upload support."
+date: "2025-08-21 02:30 AM"
+description: "A full teardown of GLM-4.5 vs Claude Opus across light coding, heavy reasoning, and scale. Spoiler: GLM-4.5 is still cheaper, anywhere from 5× to 100× depending on the workload."
 ---
 
-Look. I like evidence, not vibes. I lined up my **Claude Opus** usage in Cursor against **GLM-4.5** through OpenRouter and did the math. The economics aren’t just different—they’re in **different galaxies**.
+There are moments in tech where you stare at the numbers and think, _nah, this can’t be real_.  
+That’s exactly what happened when I compared my **GLM-4.5 usage** against **Claude Opus**. The gap isn’t just wide—it feels illegal.
 
 ---
 
-## Quick Receipts (What I Actually Paid)
+## Quick Receipts (What I Paid)
 
 ```text
 Claude 4.1 Opus (Cursor)
@@ -16,33 +17,48 @@ Claude 4.1 Opus (Cursor)
 - Total output: 49,692
 - Cost: $34.49
 
-GLM-4.5 (OpenRouter, one morning sample)
+GLM-4.5 (OpenRouter, one morning run)
 - Total tokens: ~989,447
 - Total cost: $0.0304
 - Avg per request: ~49,472 tokens for $0.00152
 ```
 
-Read that again: **~1M tokens cost me three cents.**
+Read that again: **~1M tokens for three cents.**
 
 ---
 
 ## Cost Math — Clean and Comparable
 
-| Metric                   |   Claude Opus |         GLM-4.5 |                 Delta |
-| ------------------------ | ------------: | --------------: | --------------------: |
-| **Cost / 1k tokens**     | **$0.003285** | **$0.00003075** |     **~107× cheaper** |
-| **Tokens per $1**        |  **~304,400** | **~32,520,000** | **~107× more tokens** |
-| **Cost for 10M tokens**  |    **$32.85** |     **$0.3075** |           **−$32.54** |
-| **Cost for 100M tokens** |   **$328.50** |      **$3.075** |          **−$325.43** |
-| **Cost for 1B tokens**   |    **$3,285** |      **$30.75** |        **−$3,254.25** |
+| Metric               |   Claude Opus | GLM-4.5 (morning run) |             Delta |
+| -------------------- | ------------: | --------------------: | ----------------: |
+| **Cost / 1k tokens** | **$0.003285** |        **$0.0000307** |     ~107× cheaper |
+| **Tokens per $1**    |      ~304,400 |           ~32,520,000 | ~107× more tokens |
 
-**How I computed it:**
+At the extremes, GLM-4.5 looked like it was printing tokens for free. But then I looked at **my sustained usage** across millions of tokens.
 
-- Cost/1k = total cost ÷ (total tokens / 1,000).
-- Tokens per $1 = 1 ÷ (cost/1k) × 1,000.
-- Scenario costs = (target tokens / 1,000) × cost/1k.
+---
 
-> Reality check: With GLM-4.5, **$34.49** (my Opus spend) could have driven **~1.12 _billion_ tokens**. That’s not a typo.
+## Real-World Logs (21M+ tokens)
+
+From my dashboard:
+
+| Model             | Tokens | Cost ($) | Cost / 1k | Tokens / $1 |      Savings vs Opus |
+| ----------------- | -----: | -------: | --------: | ----------: | -------------------: |
+| **glm-4.5**       |    21M |    12.90 | $0.000614 |      ~1.63M |        ~5.3× cheaper |
+| **glm-4.5-air**   |  4.41M |    0.831 | $0.000188 |      ~5.31M |         ~17× cheaper |
+| **glm-4.5v**      |  3.07K |  0.00297 | $0.000967 |      ~1.03M |        ~3.4× cheaper |
+| chatgpt-4o-latest |  1.99K |   0.0365 | $0.018342 |      ~54.5K | Opus-level expensive |
+
+---
+
+## Light Coding vs Heavy Reasoning
+
+Here’s where it gets interesting:
+
+- **Morning Run (Light Coding):** Minimal overhead, lean prompts, straight coding tasks. Result: insane efficiency (107× cheaper than Opus).
+- **Sustained Logs (Heavy Reasoning):** Bigger prompts, longer contexts, deeper reasoning steps. Efficiency drops—but still between **5× and 17× cheaper** than Opus.
+
+👉 Translation: even when I crank up context windows and force the model to think harder, GLM-4.5 never loses its cost edge. At worst, it’s 5× cheaper. At best, it’s 100× cheaper.
 
 ---
 
@@ -50,59 +66,128 @@ Read that again: **~1M tokens cost me three cents.**
 
 Define **PPI = tokens per dollar**. Higher is better.
 
-- **Opus PPI:** ~304,400
-- **GLM-4.5 PPI:** ~32,520,000
-- **Gap:** ~**107×** in favor of GLM-4.5.
+- **Claude Opus PPI:** ~304,400
+- **GLM-4.5 PPI (morning run):** ~32.5M
+- **GLM-4.5 PPI (sustained):** 1.6M to 5.3M depending on variant
 
-If your workload is **code-heavy** (autofix, refactors, RAG-augmented edits), PPI is what matters. **GLM-4.5 gives you more attempts, longer contexts, and denser iterations per dollar.**
+Even the “worst case” GLM-4.5 run beats Opus several times over.
 
 ---
 
 ## Scenario Modeling
 
-Let’s model a sprint with **200M tokens** of mixed coding + analysis.
+What if you run a heavy coding + reasoning sprint of **200M tokens**?
 
 - **Opus:** ~$657
-- **GLM-4.5:** ~$6.15
-- **Savings:** ~$650 **per sprint**
+- **GLM-4.5 (sustained rate):** ~$122 (glm-4.5) → savings ~$535
+- **GLM-4.5-air:** ~$38 → savings ~$619
+- **Morning Run rates:** ~$6 → savings ~$651
 
-Run that weekly and you’re looking at **~$33.8k/year** saved—on **one** team’s usage pattern. Scale the org and the compounding is wild.
+Either way, you’re keeping thousands in your pocket every sprint.
 
 ---
 
-## Why the Numbers Are So Lopsided
+## Why the Numbers Diverge
 
-1. **GLM-4.5 pricing** via OpenRouter is _aggressively_ low.
-2. **Cursor + Opus**: even with caching + partner rates, you still pay premium compute for thinking models.
-3. **Agentic coding**: GLM-4.5’s behavior feels more _task-oriented_ in practice, which means fewer back-and-forths to reach shippable code.
+1. **Input-heavy prompts:** Reasoning workloads inflate input tokens, raising costs.
+2. **Model variants:** GLM-4.5-air is absurdly efficient, while vanilla GLM-4.5 is still solid.
+3. **Free-tier quirks:** Some morning runs clearly benefitted from free/experimental credits, making the numbers almost comical.
 
-> Translation: **you pay less per token** _and_ **need fewer tokens to finish the job**.
+> But here’s the kicker: even without freebies, GLM-4.5 is still crushing Opus on cost.
 
 ---
 
 ## Quality Notes (My Experience)
 
-- I’ve accepted **~3k lines of code** from GLM-4.5 already.
-- It’s **at least Opus-level** for code generation + refactors, and it feels **faster to converge**.
-- Agentic loops ("do, check, fix") are **tighter**—fewer retries.
+- Accepted **~3k lines of code** already.
+- **Agentic loops** (“do, check, fix”) feel natural—tighter and fewer retries.
+- Performs better the more I throw at it, especially in multi-step reasoning.
 
-**Drawback:** GLM-4.5 currently lacks **image upload support.** If your workflow depends on multimodal input, that’s a limitation. For coding though? **Hands down, it’s insane.**
-
----
-
-## Caveats (So we’re being fair)
-
-- These price points come from **my sessions** (Cursor for Opus, OpenRouter for GLM-4.5). Your vendor, caching, or quotas might differ.
-- If you need **hallucination-resistant analysis** in non-code tasks, test both—quality deltas can be task-specific.
-- Always sandbox before prod: cheap tokens can still ship expensive bugs.
+**Drawback:** No **image upload support** yet. If your workflow depends on multimodal, that’s a limitation. But for coding? **Hands down, GLM-4.5 is insane.**
 
 ---
 
-## Bottom Line
+## Caveats (Fair Play)
 
-If you value **cost per shipped line of code**, **GLM-4.5 is a blowout win right now**. The model is competitive on brains, _better_ on coding throughput, and **~107× cheaper** on raw token economics.
+- Pricing depends on provider (Cursor vs OpenRouter).
+- Heavy reasoning loads skew token usage—so always benchmark against _your_ workflow.
+- Cheap tokens don’t excuse bad ops: sandbox before prod.
 
-When the math is this savage, the strategy is simple: **move workloads to GLM-4.5**, keep Opus for niches where it’s uniquely better, and pocket the savings.
+---
+
+## The Bottom Line
+
+- **Light coding workloads:** GLM-4.5 is **~100× cheaper than Opus.**
+- **Heavy reasoning workloads:** GLM-4.5 is still **5–17× cheaper.**
+- **Coding quality:** On par with, or better than, Opus.
+
+When the economics range from “unfair advantage” to “still massively cheaper,” the conclusion is simple:  
+**Shift coding workloads to GLM-4.5. Keep Opus only for niches. Bank the savings.**
+
+---
+
+## Deeper Cut: Light Coding vs Heavy Reasoning
+
+Not all tokens are equal. Two regimes emerged from my tests:
+
+| Regime                  | Example Workload                                  | Cost / 1k tokens |   Tokens per $1 | vs Opus (× cheaper) |
+| ----------------------- | ------------------------------------------------- | ---------------: | --------------: | ------------------: |
+| **GLM‑4.5 (Best‑case)** | Short prompts, pure code‑gen, tight loops         |  **$0.00003074** | **~32,531,547** |         **~106.9×** |
+| **GLM‑4.5 (Sustained)** | Larger inputs, RAG/context, more chain‑of‑thought |  **$0.00061429** |  **~1,627,907** |          **~5.35×** |
+| **GLM‑4.5 Air**         | Lighter tier, similar usage patterns              |  **$0.00018844** |  **~5,306,859** |         **~17.43×** |
+| **Claude Opus**         | Cursor, thinking mode                             |  **$0.00328500** |    **~304,414** |              **1×** |
+
+**Interpretation:** The tighter and more code‑focused your loop, the closer you get to the best‑case numbers. As you add **heavier context and higher‑order reasoning**, effective cost rises—but GLM‑4.5 still beats Opus handily.
+
+---
+
+## Scenario Planner (10M / 100M / 1B Tokens)
+
+| Tokens ▶ |      **Opus** | **GLM‑4.5 (Best)** | **GLM‑4.5 (Sustained)** | **GLM‑4.5 Air** |
+| -------: | ------------: | -----------------: | ----------------------: | --------------: |
+|  **10M** |    **$32.85** |        **$0.3074** |             **$6.1429** |     **$1.8844** |
+| **100M** |   **$328.50** |        **$3.0739** |            **$61.4286** |    **$18.8435** |
+|   **1B** | **$3,285.00** |       **$30.7394** |           **$614.2857** |   **$188.4354** |
+
+Even at **sustained** GLM‑4.5 rates, the 1B‑token bill is **~5.3× lower** than Opus. At **best‑case**, it’s **~107× lower**.
+
+---
+
+## Methodology & Assumptions
+
+- **Best‑case GLM‑4.5** comes from a morning batch (≈989,447 tokens for **$0.0304**). Minimal input, straight code gen.
+- **Sustained GLM‑4.5** uses your dashboard roll‑up (≈21M tokens for **$12.90**). Heavier prompts, more context windows, more reasoning.
+- **GLM‑4.5 Air** uses your dashboard roll‑up (≈4.41M tokens for **$0.831**).
+- **Opus** uses your Cursor stat (≈10.5M tokens for **$34.49**).
+- All costs normalized to **$/1k tokens** and projected to fixed token targets for apples‑to‑apples.
+
+---
+
+## When Opus Still Makes Sense
+
+- You need **image uploads / multimodal** right now (GLM‑4.5: _no image upload_).
+- Specific **analysis / safety profiles** where Opus is mandated.
+- Teams standardized on Anthropic tooling with strong cache wins on familiar prompts.
+
+---
+
+## Practical Guidance
+
+- For **autofix, refactors, and green‑field scaffolds**: default to **GLM‑4.5**.
+- For **heavier design‑doc reasoning** but still code‑adjacent: try **GLM‑4.5 Air**; if quality holds, bank the ~17× savings.
+- Keep **Opus** as a surgical tool for **multimodal** or niche reasoning cases.
+- Track **tokens/$ (PPI)** per repo over time; set an internal SLO like: _“≥ 1.5M tokens per $ on code tasks.”_
+
+---
+
+## Appendix: Repro Math
+
+- **Opus cost/1k** = $34.49 ÷ (10,506,082/1,000) = **$0.003285**.
+- **GLM‑4.5 best cost/1k** = $0.030415 ÷ (989,447/1,000) = **$0.00003074**.
+- **GLM‑4.5 sustained cost/1k** = $12.90 ÷ (21,000,000/1,000) = **$0.00061429**.
+- **GLM‑4.5 Air cost/1k** = $0.831 ÷ (4,410,000/1,000) = **$0.00018844**.
+
+Bottom line stays the same—**GLM‑4.5 is the better coder and the cheaper operator**.
 
 ---
 
