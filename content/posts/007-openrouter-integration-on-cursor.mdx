@@ -1,0 +1,67 @@
+---
+title: "How to Add OpenRouter.ai to Cursor"
+date: "2025-08-21 11:20 AM"
+description: "Step-by-step guide to integrating OpenRouter.ai into your Cursor IDE and unlocking custom LLMs like GLM-4.5."
+---
+
+So you're ready to unlock custom models in Cursor, eh? Good. Here's exactly how to plug in OpenRouter.ai so you can run stuff like `z-ai/glm-4.5` directly inside your coding flow.
+
+Follow these steps carefully, or you’ll just end up confused and yelling at your terminal.
+
+---
+
+### 🚀 Step-by-Step: Integrating OpenRouter.ai into Cursor
+
+1. **Open Cursor Settings**  
+   Click the gear icon (bottom-left). Yes, the thing you’ve ignored until now.
+
+2. **Navigate to Models**  
+   Once inside settings, go to the **Models** section.
+
+3. **Disable ALL Current Models**  
+   That’s right. *Every single one*. Disable anything that’s checked or active.
+
+4. **Scroll Down to `> Api Keys`**  
+   You’ll find a collapsible section labeled `> Api Keys`. Click it to expand.
+
+5. **Override the OpenAI Base URL**  
+   Under the **OpenAI API Key** area:
+   - Check the box that says **Override OpenAI Base URL**
+   - Paste this into the field:  
+
+     ```
+     https://openrouter.ai/api/v1
+     ```
+
+6. **Find the Right Model Name**  
+   This part *matters*. Go to [https://openrouter.ai/models](https://openrouter.ai/models).  
+   Find the proper name of the model you want to use — for example: `z-ai/glm-4.5`.  
+   You’ll need to type it *exactly* like that when adding a new model.
+
+7. **Add the Model in Cursor**  
+   Back in Cursor:
+   - Click **Add New Model**
+   - Paste the model name from OpenRouter (e.g., `z-ai/glm-4.5`)
+   - Save it
+
+8. **Add Your OpenRouter API Key**  
+   Paste your API key into the **OpenAI API Key** section.  
+   Then hit **Verify**.
+
+   If everything goes well, you’ll see something like:
+   > With your cursor Pro+ subscription, you do not need to use your own OpenAI key unless you're using custom models.
+
+9. **Test the Integration**  
+   Open the Cursor chat and try talking to your newly added model.  
+   If it replies, congrats — you’re golden.
+
+---
+
+### ✅ Bonus Tips
+
+- You can add *multiple* models from OpenRouter.ai now.
+- Check out **`z-ai/glm-4.5-air:free`** — it’s one of the free models and surprisingly solid.
+
+> ⚠️ Heads up: Free-tier models may use your prompts and completions as training data. So… maybe don’t use them for your nuclear launch codes.
+
+Happy hacking.
