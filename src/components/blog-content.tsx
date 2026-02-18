@@ -249,7 +249,7 @@ export function BlogContent({ posts, allTags }: BlogContentProps) {
             {filteredPosts.map((post, index) => (
               <li key={post.slug} className="relative">
                 {/* Post Number */}
-                <span className="absolute -left-4 lg:-left-12 top-0 text-6xl lg:text-8xl font-serif font-bold text-foreground/[0.03] select-none pointer-events-none">
+                <span className="absolute -left-4 lg:-left-16 top-0 text-7xl sm:text-8xl lg:text-9xl font-serif font-bold text-foreground/[0.08] select-none pointer-events-none">
                   {String(index + 1).padStart(2, "0")}
                 </span>
 
