@@ -164,11 +164,6 @@ export function BlogContent({ posts, allTags }: BlogContentProps) {
                     </Link>
                   </div>
                 </article>
-
-                {/* Divider */}
-                {index < filteredPosts.length - 1 && (
-                  <div className="mt-16 pt-16 border-t border-border/50" />
-                )}
               </li>
             ))}
           </ul>
