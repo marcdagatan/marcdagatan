@@ -4,23 +4,21 @@
   
   <!-- Letter M in black - Playfair Display style serif -->
   <text 
-    x="8" 
+    x="6" 
     y="78" 
     font-family="'Playfair Display', Georgia, serif" 
     font-size="72" 
     font-weight="700" 
     fill="#000000"
-    letter-spacing="-8"
   >M</text>
   
   <!-- Letter D in accent red (rgb(215, 38, 56)) - Playfair Display style serif -->
   <text 
-    x="42" 
+    x="44" 
     y="78" 
     font-family="'Playfair Display', Georgia, serif" 
     font-size="72" 
     font-weight="700" 
     fill="rgb(215, 38, 56)"
-    letter-spacing="-8"
   >D</text>
 </svg>
