@@ -3,8 +3,13 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import Fuse from "fuse.js";
-import { Search as SearchIcon, X, FileText, Sparkles, Loader2 } from "lucide-react";
+import { Search as SearchIcon, FileText, Sparkles, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface SearchPost {
   slug: string;
@@ -37,25 +42,33 @@ export function Search() {
         e.preventDefault();
         setIsOpen((prev) => !prev);
       }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsOpen(false);
       }
-      if (isOpen) {
-        if (e.key === "ArrowDown") {
-          e.preventDefault();
-          setSelectedIndex((prev) => 
-            prev < results.length - 1 ? prev + 1 : prev
-          );
-        }
-        if (e.key === "ArrowUp") {
-          e.preventDefault();
-          setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
-        }
-        if (e.key === "Enter" && selectedIndex >= 0 && results[selectedIndex]) {
-          e.preventDefault();
-          window.location.href = `/blog/${results[selectedIndex].slug}`;
-          handleClose();
-        }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setSelectedIndex((prev) => 
+          prev < results.length - 1 ? prev + 1 : prev
+        );
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
+      }
+      if (e.key === "Enter" && selectedIndex >= 0 && results[selectedIndex]) {
+        e.preventDefault();
+        window.location.href = `/blog/${results[selectedIndex].slug}`;
+        handleClose();
       }
     };
 
@@ -101,23 +114,18 @@ export function Search() {
     }
   }, [selectedIndex]);
 
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground/60 hover:text-foreground border border-border rounded-md transition-all duration-200 hover:border-accent/50 hover:bg-accent/5"
-      >
-        <SearchIcon size={16} />
-        <span className="hidden sm:inline">Search</span>
-        <kbd className="hidden sm:inline text-xs bg-foreground/10 px-1.5 py-0.5 rounded">⌘K</kbd>
-      </button>
-    );
-  }
-
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[10vh]">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleClose} />
-      <div className="relative w-full max-w-xl mx-4 bg-background border border-border rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <button
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground/60 hover:text-foreground border border-border rounded-md transition-all duration-200 hover:border-accent/50 hover:bg-accent/5"
+        >
+          <SearchIcon size={16} />
+          <span className="hidden sm:inline">Search</span>
+          <kbd className="hidden sm:inline text-xs bg-foreground/10 px-1.5 py-0.5 rounded">⌘K</kbd>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xl p-0 gap-0 top-[10vh] translate-y-0 data-[state=open]:slide-in-from-top-[10vh] data-[state=closed]:slide-out-to-top-[10vh]">
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
           {loading ? (
             <Loader2 size={20} className="text-accent animate-spin" />
@@ -133,13 +141,6 @@ export function Search() {
             className="flex-1 bg-transparent border-none outline-none text-foreground placeholder:text-muted-foreground text-base"
             autoFocus
           />
-          <button 
-            onClick={handleClose}
-            className="p-1 hover:bg-foreground/10 rounded-md transition-colors"
-            aria-label="Close search"
-          >
-            <X size={18} className="text-muted-foreground hover:text-foreground" />
-          </button>
         </div>
         
         <div ref={resultsRef} className="max-h-[60vh] overflow-y-auto">
@@ -228,7 +229,7 @@ export function Search() {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
