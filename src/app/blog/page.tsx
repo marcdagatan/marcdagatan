@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getAllPostsMeta } from "@/lib/posts";
 import { TagList } from "@/components/tag-list";
 import { JsonLd } from "@/components/json-ld";
+import { Clock } from "lucide-react";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://marcuyyy.com";
 
@@ -35,42 +36,59 @@ export default function BlogIndex() {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <main className="space-y-8">
-      <h1 className="text-[2.5rem] sm:text-[4rem] lg:text-[6rem] xl:text-[7rem] leading-[1.03] font-bold tracking-[-0.02em]">
-        Thoughts of a Mastermind in Pajamas
-      </h1>
-      <p className="text-base sm:text-lg md:text-xl text-foreground/70">It&apos;s hard to plot world domination when your coffee&apos;s still brewing… but I&apos;m making it work.</p>
-      <ul className="divide-y divide-white/10">
-        {posts.map((post) => (
-          <li key={post.slug} className="py-4">
-            <article className="flex flex-col gap-1">
-              <h2 className="text-[1.5rem] sm:text-[2rem] lg:text-[2.5rem] xl:text-[3rem] leading-[1.1] font-bold tracking-[-0.01em]">
-                <Link href={`/blog/${post.slug}`} className="hover:underline">
-                  {post.title}
-                </Link>
-              </h2>
-              {post.description ? (
-                <p className="text-sm text-foreground/70">{post.description}</p>
-              ) : null}
-              <div className="flex items-center gap-3 text-xs text-foreground/50">
-                <time dateTime={post.dateISO}>
-                  {new Date(post.timestamp).toLocaleString(undefined, {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </time>
-                <span>·</span>
-                <span>{post.readingTime} min read</span>
-              </div>
-              <TagList tags={post.tags} />
-            </article>
-          </li>
-        ))}
-      </ul>
-    </main>
+      <main className="space-y-10">
+        <div className="space-y-4">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight leading-[1.1]">
+            Thoughts of a Mastermind in Pajamas
+          </h1>
+          <p className="text-lg sm:text-xl text-muted-foreground leading-relaxed max-w-2xl">
+            It&apos;s hard to plot world domination when your coffee&apos;s still brewing… but I&apos;m making it work.
+          </p>
+        </div>
+        
+        {posts.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">No posts yet. Check back soon!</p>
+          </div>
+        ) : (
+          <ul className="divide-y divide-border">
+            {posts.map((post) => (
+              <li key={post.slug} className="py-6 first:pt-0">
+                <article className="flex flex-col gap-2">
+                  <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight leading-tight">
+                    <Link 
+                      href={`/blog/${post.slug}`} 
+                      className="hover:text-accent transition-colors duration-200"
+                    >
+                      {post.title}
+                    </Link>
+                  </h2>
+                  {post.description ? (
+                    <p className="text-muted-foreground leading-relaxed max-w-prose">
+                      {post.description}
+                    </p>
+                  ) : null}
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                    <time dateTime={post.dateISO}>
+                      {new Date(post.timestamp).toLocaleString(undefined, {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </time>
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                      <Clock size={14} />
+                      {post.readingTime} min read
+                    </span>
+                  </div>
+                  <TagList tags={post.tags} />
+                </article>
+              </li>
+            ))}
+          </ul>
+        )}
+      </main>
     </>
   );
 }

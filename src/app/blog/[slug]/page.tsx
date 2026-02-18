@@ -112,30 +112,34 @@ export default async function PostPage({ params }: Params) {
     <>
       <JsonLd data={jsonLd} />
       <article className="prose max-w-none">
-      <header className="mb-8">
-        <h1>{meta.title}</h1>
-        <div className="flex items-center gap-3 text-sm text-foreground/60">
-          <time dateTime={meta.dateISO}>
-            {new Date(meta.timestamp).toLocaleString(undefined, {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
-          </time>
-          <span>·</span>
-          <span>{meta.readingTime} min read</span>
+        <header className="mb-10 pb-8 border-b border-border">
+          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-4">
+            {meta.title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+            <time dateTime={meta.dateISO}>
+              {new Date(meta.timestamp).toLocaleString(undefined, {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </time>
+            <span>·</span>
+            <span>{meta.readingTime} min read</span>
+          </div>
+          {meta.description ? (
+            <p className="mt-4 text-lg text-muted-foreground leading-relaxed max-w-prose">
+              {meta.description}
+            </p>
+          ) : null}
+          <TagList tags={meta.tags} />
+        </header>
+        {content}
+        <div className="mt-12 pt-8 border-t border-border">
+          <p className="text-sm text-muted-foreground font-medium text-center">~ FIN ~</p>
         </div>
-        {meta.description ? (
-          <p className="mt-2 text-foreground/70">{meta.description}</p>
-        ) : null}
-        <TagList tags={meta.tags} />
-      </header>
-      {content}
-      <p className="text-sm text-foreground/40 font-bold text-center pt-8">~ FIN ~</p>
-      <RelatedPosts posts={relatedPosts} />
-    </article>
+        <RelatedPosts posts={relatedPosts} />
+      </article>
     </>
   );
 }
