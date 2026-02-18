@@ -43,11 +43,11 @@ const helveticaNeue = localFont({
 });
 
 export const metadata: Metadata = {
-  title: {
-    default: "Marc — Blog",
-    template: "%s · Marc — Blog",
-  },
+  title: "Marc Uy Dagatan",
   description: "Minimal, dark, MDX-powered blog.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
