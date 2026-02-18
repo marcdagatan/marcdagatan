@@ -9,6 +9,7 @@ import rehypePrettyCode from "rehype-pretty-code";
 import rehypeInlineCodeToPre from "@/lib/rehype-inline-code-to-pre";
 import { TagList } from "@/components/tag-list";
 import { RelatedPosts } from "@/components/related-posts";
+import { SocialShare } from "@/components/social-share";
 import { JsonLd } from "@/components/json-ld";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -111,7 +112,7 @@ export default async function PostPage({ params }: Params) {
   return (
     <>
       <JsonLd data={jsonLd} />
-      <article className="prose max-w-none">
+      <article className="prose max-w-none pb-24">
         <header className="mb-10 pb-8 border-b border-border">
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-4">
             {meta.title}
@@ -140,6 +141,7 @@ export default async function PostPage({ params }: Params) {
         </div>
         <RelatedPosts posts={relatedPosts} />
       </article>
+      <SocialShare title={meta.title} slug={slug} />
     </>
   );
 }
