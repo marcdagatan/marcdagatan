@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#111111;stop-opacity:1" />
+    </linearGradient>
+    <radialGradient id="spotlight" cx="50%" cy="30%" r="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0" />
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGradient)"/>
+  
+  <!-- Spotlight effect -->
+  <ellipse cx="600" cy="200" rx="400" ry="250" fill="url(#spotlight)"/>
+  
+  <!-- Boxing ring ropes - back -->
+  <line x1="300" y1="280" x2="900" y2="280" stroke="#333" stroke-width="2" opacity="0.5"/>
+  <line x1="300" y1="320" x2="900" y2="320" stroke="#333" stroke-width="2" opacity="0.5"/>
+  <line x1="300" y1="360" x2="900" y2="360" stroke="#333" stroke-width="2" opacity="0.5"/>
+  
+  <!-- Ring posts -->
+  <rect x="280" y="250" width="8" height="150" fill="#222"/>
+  <rect x="912" y="250" width="8" height="150" fill="#222"/>
+  
+  <!-- The Bell - Main focus -->
+  <g transform="translate(600, 200)">
+    <!-- Bell body -->
+    <path d="M-60,0 Q-60,-80 0,-90 Q60,-80 60,0 L50,20 L-50,20 Z" fill="#c9a961" filter="url(#glow)"/>
+    <!-- Bell highlight -->
+    <path d="M-40,-20 Q-40,-70 0,-75 Q40,-70 40,-20" fill="none" stroke="#e8d5a3" stroke-width="3" opacity="0.6"/>
+    <!-- Bell bottom rim -->
+    <ellipse cx="0" cy="20" rx="50" ry="8" fill="#b8944f"/>
+    <!-- Clapper -->
+    <circle cx="0" cy="45" r="12" fill="#8b7355"/>
+    <line x1="0" y1="20" x2="0" y2="35" stroke="#8b7355" stroke-width="4"/>
+    <!-- Red accent on bell -->
+    <path d="M-20,-60 Q0,-70 20,-60" fill="none" stroke="rgb(215, 38, 56)" stroke-width="4" opacity="0.8"/>
+  </g>
+  
+  <!-- Boxing ring ropes - front (darker) -->
+  <line x1="280" y1="300" x2="920" y2="300" stroke="#444" stroke-width="3"/>
+  <line x1="280" y1="340" x2="920" y2="340" stroke="#444" stroke-width="3"/>
+  <line x1="280" y1="380" x2="920" y2="380" stroke="#444" stroke-width="3"/>
+  
+  <!-- Floor perspective lines -->
+  <line x1="300" y1="400" x2="200" y2="630" stroke="#222" stroke-width="1" opacity="0.3"/>
+  <line x1="900" y1="400" x2="1000" y2="630" stroke="#222" stroke-width="1" opacity="0.3"/>
+  <line x1="600" y1="400" x2="600" y2="630" stroke="#222" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Subtle red accent line at bottom -->
+  <rect x="0" y="620" width="1200" height="10" fill="rgb(215, 38, 56)" opacity="0.6"/>
+  
+  <!-- Text: THE FIRST BELL -->
+  <text x="600" y="520" 
+        font-family="Georgia, serif" 
+        font-size="48" 
+        font-weight="700" 
+        fill="#ffffff" 
+        text-anchor="middle"
+        letter-spacing="4"
+        opacity="0.9">
+    THE FIRST BELL
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="560" 
+        font-family="system-ui, sans-serif" 
+        font-size="18" 
+        fill="rgba(255,255,255,0.5)" 
+        text-anchor="middle"
+        letter-spacing="2">
+    ANSWER THE CALL
+  </text>
+</svg>

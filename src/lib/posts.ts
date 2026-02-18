@@ -13,6 +13,7 @@ export type PostMeta = {
   description?: string;
   tags: string[];
   readingTime: number;
+  headerImage?: string;
 };
 
 const postsDirectory = path.join(process.cwd(), "content", "posts");
@@ -63,6 +64,7 @@ export function getPostSource(slug: string): { meta: PostMeta; content: string }
     description: data.description ? String(data.description) : undefined,
     tags,
     readingTime,
+    headerImage: data.headerImage ? String(data.headerImage) : undefined,
   };
   return { meta, content };
 }

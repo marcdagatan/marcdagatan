@@ -135,6 +135,18 @@ export default async function PostPage({ params }: Params) {
           ) : null}
           <TagList tags={meta.tags} />
         </header>
+        
+        {/* Header Image */}
+        {meta.headerImage && (
+          <div className="mb-10 -mx-4 sm:mx-0">
+            <img
+              src={meta.headerImage}
+              alt={`Header image for ${meta.title}`}
+              className="w-full h-auto block"
+            />
+          </div>
+        )}
+        
         {content}
         <div className="mt-12 pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground font-medium text-center">~ FIN ~</p>
