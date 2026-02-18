@@ -1,0 +1,561 @@
+---
+title: "The Skills Router: Governing AI Coding Instead of Hoping It Behaves"
+date: "2026-02-18 01:45 PM"
+description: "Why bigger models aren’t the answer — and how a deterministic Skills Router architecture turns AI coding from probabilistic guessing into governed execution."
+---
+
+The industry keeps trying to solve AI coding with the same set of levers: larger models, longer context, and more “agentic” autonomy.
+
+In practice, those levers often increase the sophistication of the failures without addressing the underlying issue.
+
+For AI to write production code, the leverage is not just raw intelligence. It is governance: a control plane that constrains how the model reasons, what it is allowed to touch, and which rules it is expected to apply before it generates anything.
+
+This is the architectural stance behind the Skills Router system I developed in `opencode-config` (the OpenCode configuration at `~/.config/opencode`) and open-sourced at https://github.com/madsoftwaredev/opencode-config.
+
+The proximate catalyst was Vercel’s agent eval work on `AGENTS.md` versus “skills.” Their results were a clear signal: treat retrieval and policy as a first-class control-plane concern, not an optional behavior the model might remember to do (Vercel, “AGENTS.md outperforms skills in our agent evals”). The system described here is one concrete way to operationalize that stance.
+
+This is not a prompt. It is not a tutorial trick. It is a system design decision: move AI coding from “probabilistic collaborator” to “policy-constrained executor.”
+
+I am going to argue something specific:
+
+1. Many persistent AI coding failures are governance failures, not capability failures.
+
+2. A scalable fix is to separate the control plane (routing + policy) from the reasoning plane (generation), and make the control plane deterministic.
+
+3. A Skills Router is a simple workable control plane today: it routes intent to a minimal, versioned set of constraints and then lets the model operate inside that box.
+
+The point is not to make the model “smarter.” The point is to make it _legible_, _repeatable_, and _auditable_.
+
+## The Real Problem: AI Coding Is a Governance Problem
+
+When people say “AI coding is flaky,” they usually mean one of these:
+
+- It writes code that looks correct but fails at runtime.
+- It overreaches: rewrites modules, changes APIs, edits unrelated files.
+- It violates local conventions and creates long-term inconsistency.
+- It forgets constraints mid-task (security, testing, boundaries).
+- It oscillates: different answers for the same request across runs.
+
+Those look like model problems. Underneath, they are often _system_ problems.
+
+The root cause is that many AI coding stacks treat the model as both the decision-maker and the executor. We ask a probabilistic generator to:
+
+- infer intent,
+- decide which rules apply,
+- decide which tools to use,
+- decide what “good” means in this repo,
+- and then implement.
+
+That is not one job. That is five jobs.
+
+And when all five jobs happen inside a single ungoverned context window, the failure mode that tends to matter most shows up: **context entropy**.
+
+### Context Entropy (And Why It Gets Worse Over Time)
+
+Context entropy is what happens when the system can no longer reliably predict which instructions will win.
+
+Every new guideline added to a prompt (or to an “agent system prompt”) competes with every other guideline. Over time:
+
+- Constraints conflict.
+- The model starts “averaging” them.
+- The model adapts its behavior to whichever phrasing is most salient.
+- Engineers patch it by adding more text.
+
+That loop feels like progress because the prompt is longer. In reality, a clear contract is being traded for an ever-growing set of loosely scoped instructions.
+
+This is commonly underestimated: prompt debt compounds the same way tech debt does, but faster, because the runtime is probabilistic.
+
+### Skill Bleed
+
+The second-order effect of context entropy is skill bleed: advice intended for one scenario leaks into another.
+
+Common examples:
+
+- The model applies “enterprise architecture” patterns to a small refactor.
+- It writes exhaustive tests for a doc-only change.
+- It introduces caching in the middle of a correctness fix.
+
+Skill bleed is not the model being incompetent. It is the model doing exactly what it was trained to do: combine patterns and optimize for plausibility.
+
+To keep output stable, it typically helps to stop treating “more guidance” as universally helpful. Guidance has to be loaded only when it is relevant.
+
+### Agent Overreach
+
+The third failure mode is overreach: the model does more than it is authorized to do.
+
+This happens because most AI systems implicitly ask the model to be a senior engineer: anticipate edge cases, refactor proactively, improve structure. That’s fine in a human teammate. In an LLM, it becomes a liability because the boundary between “helpful refactor” and “unreviewable rewrite” is not enforced.
+
+Overreach is not solved by better intention. It is solved by explicit authority.
+
+One recurring pattern, before I added governance, looked like this: a developer would ask for a narrow change (for example, adjusting validation behavior or tweaking an endpoint shape), and the agent would "help" by refactoring adjacent code, touching unrelated files, and updating names to match its own aesthetic. The change set would look clean, but it would be non-local: subtle contract changes, tests that no longer expressed the original behavior, and a diff that was hard to review because the task boundary had dissolved.
+
+What fixed it was not a better model. What fixed it was a bounded execution path: load the relevant constraints first, restrict what can be edited until those constraints are present, and treat “scope” as a policy decision rather than a conversational suggestion.
+
+## Why Common Industry Approaches Don’t Fix This
+
+There are three default levers the industry pulls when AI coding fails. All three are insufficient.
+
+### 1) “Just Use a Bigger Model”
+
+A bigger model can be more capable, but it does not fix governance. In practice, it can make governance harder:
+
+- Bigger models have more latent patterns to choose from.
+- They can justify almost any direction.
+- They can produce more persuasive wrong code.
+
+If the system does not constrain which rules apply, a bigger model mostly increases the confidence of the mistake.
+
+### 2) “Just Use a Bigger Context Window”
+
+Longer context windows do not reduce entropy. They increase the amount of competing instructions.
+
+This is not theoretical. You can measure it:
+
+- The same task prompt yields different implementations depending on which files were included.
+- The model oscillates because it is sampling from a larger instruction surface.
+
+When everything is kept in context all the time, nothing is clearly _prioritized_. Retrieval gives way to flooding.
+
+### 3) “Just Use Multi-Agent Orchestration”
+
+Most multi-agent systems are still improvisational. They add more reasoning nodes, but they do not add a deterministic control plane.
+
+When agents can decide their own tools, decide which rules to follow, and decide which parts of the codebase to modify, governance hasn’t been added. The lack of governance has been distributed across multiple processes.
+
+The need here is less “more minds” and more a constitution.
+
+## The Shift: Route Before You Reason
+
+The architectural principle behind the Skills Router is simple:
+
+1. **Routing is a control-plane problem.** It should be deterministic.
+2. **Reasoning is a data-plane problem.** It can remain probabilistic inside constraints.
+
+This is the same separation used everywhere in infrastructure:
+
+- Kubernetes separates desired state (control plane) from workload execution (data plane).
+- Databases separate query planning from query execution.
+- Compilers separate parsing/type-checking from code generation.
+
+AI coding needs the same separation.
+
+You do not want the model to decide which rules apply while it is already mid-generation.
+
+You want the system to decide which rules apply _before_ the model writes anything.
+
+## The Skills Router Architecture
+
+In OpenCode, “skills” are not informal heuristics. They are modular context units: focused, versionable documents that constrain behavior for a specific stack or concern.
+
+The “router” is the mechanism that chooses the smallest set of skills relevant to the request.
+
+In practice, the router system is mostly structure:
+
+```
+skills/<name>/
+  SKILL.md              # router: when to load / when not to load / routing table
+  <leaf-topic-a>.md     # one narrow decision surface (rules, checklists, stop triggers)
+  <leaf-topic-b>.md
+
+.opencode/skills/<name>/
+  ...                   # optional project-local override for repo conventions
+```
+
+Two templates make the override story concrete:
+
+- `~/.config/opencode/templates/project-local-skills/.opencode/skills/example/SKILL.md`
+- `~/.config/opencode/templates/project-local-skills/.opencode/skills/example/routing.md`
+
+At a high level:
+
+```
+User Intent
+   |
+   v
+[Router] --- deterministically selects ---> [Skill Routers] ---> [1-2 Leaf Docs]
+   |
+   v
+[Agent Selection + Tool Permissions]
+   |
+   v
+[Execution: read/search/edit/bash]  -->  [Compaction includes loaded skills]
+```
+
+This can look mundane on paper. In practice, it changes what can go wrong.
+
+When I say “deterministic” here, I do not mean that an LLM classifier always routes perfectly. I mean that the _governance protocol_ is deterministic: the precedence rules are explicit, the order of operations is defined (explore the project, load the appropriate router(s), then load narrow leaves), and enforcement makes that ordering non-optional.
+
+The difference is that “what the model is allowed to do” is no longer implicit. It becomes encoded in:
+
+- a precedence hierarchy,
+- a routing protocol,
+- and enforcement.
+
+That turns AI coding from improvisation into execution.
+
+## Layer 1: The Governance Layer (The Constitution)
+
+In `opencode-config`, governance starts with a single principle (and I mean that literally):
+
+> Prefer retrieval-led reasoning over pre-training-led reasoning.
+
+I didn’t coin that line. It came from Vercel’s agent eval work on Next.js 16—specifically the moment they stopped treating “docs access” as a capability problem and started treating it as a control-plane problem: make the agent retrieve first, _by default_ (Vercel, “The hunch that paid off”).
+
+This principle appears in `~/.config/opencode/AGENTS.md` and in the global instruction files referenced by `~/.config/opencode/opencode.json`.
+
+Why does that matter? Because it reverses the default posture of most AI coding tools.
+
+The default posture is: “Generate an answer from training data, and consult the repo if needed.”
+
+The governance posture is: “Consult the repo _first_, then reason.”
+
+Mechanically, this is how governance becomes real:
+
+- `opencode.json` defines the always-on instruction set (`instructions/core.md`, `instructions/testing.md`, etc.).
+- `opencode.json` defines permissions at the tool level (deny reading secrets; gate destructive commands; constrain special agents).
+- `AGENTS.md` defines behavioral priorities (local rules win; load skills before edits; testing/doc triggers).
+
+This is where many “agent frameworks” fail in practice: they make retrieval optional. Vercel’s evals showed why that is brittle. In their setup, skills weren’t invoked in 56% of cases (“Skills weren't being triggered reliably”), and the default pass rate with a skill present was indistinguishable from baseline. Explicit instructions improved results, but small wording changes materially changed behavior (“Explicit instructions helped, but wording was fragile”). Their best result came from removing the decision point entirely: put a compressed docs index in `AGENTS.md` so it is present every turn, achieving a 100% pass rate in their hardened eval suite (“The results surprised us”, “Addressing the context bloat concern”).
+
+This is also the key distinction between governance and “just add more docs.” We use `AGENTS.md` as the always-on constitution and as the place where the retrieval-first posture is declared. Skills are used for narrow, task-scoped constraints (and, critically, they are enforced). The system is not asking the model to remember to retrieve; it is structuring the workflow so that retrieval and constraints are the default path.
+
+This is a constitution because it is not situational. It applies to every session, every task.
+
+The key is that it introduces a precedence hierarchy:
+
+1. project-local rules (in a repo’s `.opencode/skills/`)
+2. global skills (in `~/.config/opencode/skills/`)
+3. general model priors
+
+That hierarchy is the opposite of what most people do. Most people implicitly let model priors win and sprinkle repo-specific notes on top.
+
+We made local constraints the default winner.
+
+## Layer 2: The Routing Layer (Minimal Context on Purpose)
+
+The routing layer is embodied by `SKILL.md` files. Each skill is a router that points to leaf documents.
+
+The design choice here is not “documentation.” It is _modularity_. Instead of one global prompt that tries to cover every language, framework, and concern, constraints live in small, focused leaves.
+
+The structure comes first; the reasoning for it follows.
+
+### 1) It Prevents Skill Bleed
+
+If the model is fixing a Next.js server action, it should not carry around Flutter navigation rules.
+
+Skill isolation is not a nicety. It helps preserve correctness under probabilistic reasoning.
+
+### 2) It Makes Guidance Versionable
+
+Teams evolve. Conventions change. Frameworks shift.
+
+If your “prompt” is one amorphous blob, it is hard to version with intent. You can only edit it.
+
+With modular guidance, it becomes possible to:
+
+- diff it,
+- review it,
+- lint it,
+- and ship it with intent.
+
+### 3) It Keeps Context Cheap
+
+Token cost matters, but the deeper point is attention. The model’s attention is finite.
+
+Every irrelevant paragraph is an opportunity for the model to pick the wrong constraint.
+
+### 4) It Forces Explicitness
+
+Router docs have to say:
+
+- when to load,
+- when not to load,
+- what rules are non-negotiable,
+- what the stop triggers are.
+
+That pushes teams out of “advice” and into “policy.”
+
+## Layer 3: The Execution Layer (Agents Are Roles, Not Personalities)
+
+Once routing selects constraints, execution is performed by an agent definition in `~/.config/opencode/opencode.json`.
+
+This is where many agent frameworks become ambiguous. We kept it intentionally operational.
+
+An agent is:
+
+- a tool permissions profile,
+- a temperature,
+- and a scope.
+
+The temperature setting is not incidental. In `~/.config/opencode/opencode.json`, agents that benefit from precision and repeatability run colder (for example `plan` and `mega-plan` at `temperature: 0.1`, and `code-reviewer` / `security-auditor` at `temperature: 0.1`). Agents that benefit from breadth or phrasing latitude run slightly warmer (for example `web-designer` at `temperature: 0.3`).
+
+This is part of the same governance posture: lower variance where the output becomes a contract (plans, reviews, security checks), and accept a bit more variance where exploration is the point.
+
+For example, a Q&A agent can be read-only. A planning agent can be read-only with limited bash. A debugging agent can run bash and edit.
+
+That means “agent selection” is not subjective. It is an authorization decision.
+
+And that’s the point: the system should decide what the model is allowed to do.
+
+## Layer 4: Enforcement (Stop the World Until Skills Are Loaded)
+
+This is the part that turns architecture into behavior.
+
+If routing is meant to matter, it has to be enforced.
+
+In `~/.config/opencode/templates/project-local-plugins/.opencode/plugins/skill-guard.ts`, SkillGuard does something intentionally blunt:
+
+```ts
+// Blocks file modifications until skills are loaded
+if (loaded.size === 0 && isEditLikeTool(tool)) {
+  throw new Error("SkillGuard: load skills before editing files");
+}
+```
+
+This is not about punishing the model. It is about making the system’s control plane non-optional.
+
+Without enforcement, “load skills first” becomes a suggestion.
+
+With enforcement, it becomes a gate.
+
+Implementation note: this gate exists because “helpful” changes in the wrong style, with the wrong constraints, in files the task did not mention, are costly to review. The model is not malicious; it is optimizing for plausibility and initiative. Governance is what turns “helpful” into “safe.”
+
+## Layer 5: Quality (Routing Must Be Lintable)
+
+If skills are a control plane, they should not be tribal knowledge.
+
+They should be testable.
+
+In `~/.config/opencode/scripts/skills_lint.py`, router correctness is linted:
+
+- every skill has valid frontmatter,
+- router references exist,
+- router actually references all leaves,
+- leaves include required headings.
+
+This matters because the failure mode of a skills architecture is silent drift: the router says one thing, the leaves say another, and nobody notices.
+
+By making skill quality machine-checkable, the control plane stays trustworthy.
+
+## Determinism in a Probabilistic World
+
+Let’s be precise: a Skills Router does not make LLM output deterministic.
+
+It makes _constraints_ deterministic.
+
+That difference is the entire architecture.
+
+- The model can still choose variable phrasing.
+- It can still take different implementation paths.
+
+But it is less able to do so arbitrarily, because:
+
+1. routing selects which constraints are in context,
+2. governance defines precedence,
+3. permissions define authority,
+4. enforcement blocks ungoverned edits.
+
+This is the mechanism that converts probabilistic reasoning into governed execution.
+
+In other words:
+
+- We are not trying to make the model predictable by making it less creative.
+- We are making it predictable by making the system more structured.
+
+That’s a different philosophy than “prompt engineering.”
+
+Prompt engineering tries to persuade.
+
+Governance architecture tries to constrain.
+
+## Comparing Against Industry Norms
+
+If other “routers” have been tried, it can look like the same idea with different words.
+
+It is not.
+
+### Intent Routers vs Skills Routers
+
+Most intent routers route to prompts.
+
+They classify the request (“bug fix,” “feature,” “docs”) and then inject a tailored system prompt.
+
+That can help. But it leaves three problems unsolved:
+
+1. **Precedence:** when prompts conflict, which wins?
+2. **Locality:** how do repo-specific rules override global defaults?
+3. **Enforcement:** what prevents edits before routing?
+
+In the Skills Router architecture:
+
+- precedence is explicit (`.opencode/skills/` beats global),
+- locality is first-class (project-local skills are expected),
+- enforcement exists (SkillGuard + tool permissions).
+
+### “AI Pair Programmer” Defaults
+
+The default AI coding product is an interactive assistant embedded in the editor:
+
+- It stays in the editor.
+- It responds to a prompt.
+- It has a long-running memory of your repo.
+
+This can work well for small, bounded tasks. It degrades as the surface area of the system grows.
+
+Why? Because the default unit is a conversation, not a contract.
+
+In production work, your unit is a contract: constraints, invariants, interfaces, tests, and safety boundaries.
+
+Skills are a way to make those contracts loadable.
+
+### Academic Multi-Agent Orchestration
+
+The research ecosystem tends to optimize for benchmark wins: more agents, more reflection, more tool calls.
+
+Benchmarks don’t pay the cost of drift.
+
+Founders do.
+
+In a real codebase:
+
+- Every “smart” agentic behavior is a governance surface.
+- Every tool call is a permission decision.
+- Every implicit rule becomes a future incident.
+
+The Skills Router chooses a different axis: fewer degrees of freedom, more explicit constraints.
+
+## Trade-Offs (Because This Isn’t Free)
+
+The Skills Router architecture is not a magic solution. It is a trade.
+
+Here is what this approach tends to cost:
+
+### You Pay an Upfront Tax to Encode Constraints
+
+Someone has to write and maintain the skill leaves.
+
+If a team does not already have strong conventions, this tends to surface that gap quickly.
+
+### You Accept That Routing Can Be Wrong
+
+Deterministic routing means misclassifications still happen.
+
+The mitigation is not “make routing smarter.” The mitigation is to design routers that are cheap to override:
+
+- load one more leaf,
+- route to a cross-cutting skill (security/testing/database),
+- or stop and ask a question.
+
+### You Reduce Flexibility on Purpose
+
+This architecture makes improvisation harder.
+
+That is the point.
+
+But it also means:
+
+- prototyping feels slower,
+- one-off hacks feel more constrained,
+- and “just do it” is less available.
+
+If the goal is for AI to move fast in a messy space, this approach may feel constraining.
+
+If the goal is for AI to ship changes a team can bet a product on, the constraints tend to look more attractive.
+
+### You Risk Over-Standardization
+
+Governance can calcify. If skill guidance becomes dogma, it can prevent legitimate evolution in a codebase.
+
+The mitigation is to treat skills as versioned policy, not timeless truth: keep them small, review them like code, lint them, and back changes with benchmarks or targeted evals so the control plane evolves deliberately instead of drifting accidentally.
+
+## Where This Fits in the Broader Ecosystem
+
+The Skills Router sits in a larger shift happening across the industry: treating AI behavior as infrastructure.
+
+You can see echoes of this in:
+
+- the rise of `AGENTS.md` / repo-level governance files,
+- retrieval-first agent architectures,
+- MCP servers as standardized tool boundaries,
+- and the slow recognition that “prompting” is not an operations strategy.
+
+In that ecosystem, the Skills Router is a deliberately small proposal:
+
+- Don’t build a giant platform.
+- Don’t bet on a single mega-agent.
+- Build a deterministic control plane made of versioned text and enforced boundaries.
+
+That is why the system lives in a config repo, not in an app.
+
+It is closer to policy as code than it is to “AI features.”
+
+## Long-Term Implications
+
+With a control plane in place, the interesting questions change.
+
+You stop asking:
+
+- “Which model is best?”
+
+And the questions shift to:
+
+- “Which constraints produce the behavior the team wants?”
+- “Can AI behavior be audited and diffed over time?”
+- “Can a change to AI governance be shipped the way a migration is shipped?”
+
+Three implications matter most.
+
+### 1) Team-Wide Standardization Without Central Policing
+
+If conventions are loadable skills, fewer review cycles are spent on manual enforcement.
+
+You push them into the control plane.
+
+This is the same move teams made with formatting and linting years ago.
+
+### 2) AI in CI/CD Becomes Operationally Plausible
+
+Many “AI in CI” ideas stall because they are not reproducible.
+
+Governed AI can be.
+
+If routing + constraints are deterministic, it becomes easier to imagine:
+
+- automated refactor PRs that follow repo rules,
+- security hardening suggestions that load the security skill,
+- test generation that routes through testing conventions.
+
+Not because the model is perfect, but because the system is legible.
+
+### 3) Skills Become a Real Asset Class
+
+If skills are versionable and lintable, they become shareable.
+
+Not as “prompts,” but as architecture: hardened playbooks that encode how to work in a stack.
+
+That’s a different market than prompt libraries. Prompt libraries are about persuasion.
+
+Skill libraries are about governance.
+
+## Closing Stance
+
+Bigger models do not compensate for bad architecture.
+
+If an AI coding stack relies on the model to infer intent, select constraints, and police itself, drift becomes likely. It might happen slowly. It might happen with beautiful code. But without a control plane, drift becomes a normal outcome.
+
+The Skills Router is an explicit decision to resist drift.
+
+It is a claim that AI coding needs the same thing every other production system needs:
+
+- a control plane,
+- explicit policy,
+- enforced boundaries,
+- and versioned, reviewable contracts.
+
+Not because models aren’t impressive.
+
+Because impressive systems still fail without governance.
+
+## References
+
+- Jude Gao. “AGENTS.md outperforms skills in our agent evals.” Vercel Blog. Published January 27, 2026. https://vercel.com/blog/agents-md-outperforms-skills-in-our-agent-evals
