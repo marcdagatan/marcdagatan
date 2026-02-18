@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Search } from "@/components/search";
 
 export function SiteHeader() {
   return (
@@ -12,13 +13,11 @@ export function SiteHeader() {
           >
             Marc Uy Dagatan
           </Link>
-          {/* <nav className="hidden gap-4 text-sm md:flex">
-            <Link href="/blog" className="text-foreground/80 hover:text-foreground">
-              Blog
-            </Link>
-          </nav> */}
         </div>
-        <ThemeToggle />
+        <div className="flex items-center gap-2">
+          <Search />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );

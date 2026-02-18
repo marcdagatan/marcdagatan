@@ -11,6 +11,8 @@ export type PostMeta = {
   dateISO: string;
   timestamp: number;
   description?: string;
+  tags: string[];
+  readingTime: number;
 };
 
 const postsDirectory = path.join(process.cwd(), "content", "posts");
@@ -44,6 +46,14 @@ export function getPostSource(slug: string): { meta: PostMeta; content: string }
   const { data, content } = matter(fileContents);
   const dateRaw = data.date ?? new Date().toISOString();
   const dateObj = parseDate(dateRaw);
+  const tags = Array.isArray(data.tags) 
+    ? data.tags.map(String) 
+    : data.tags 
+      ? [String(data.tags)] 
+      : [];
+  const wordCount = content.split(/\s+/).length;
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+  
   const meta: PostMeta = {
     slug,
     title: String(data.title ?? slug),
@@ -51,6 +61,8 @@ export function getPostSource(slug: string): { meta: PostMeta; content: string }
     dateISO: new Date(dateObj.getTime()).toISOString(),
     timestamp: dateObj.getTime(),
     description: data.description ? String(data.description) : undefined,
+    tags,
+    readingTime,
   };
   return { meta, content };
 }
@@ -59,4 +71,48 @@ export function getAllPostsMeta(): PostMeta[] {
   return getPostSlugs()
     .map((slug) => getPostSource(slug).meta)
     .sort((a, b) => b.timestamp - a.timestamp);
+}
+
+export function getPostsByTag(tag: string): PostMeta[] {
+  const normalizedTag = tag.toLowerCase();
+  return getAllPostsMeta()
+    .filter((post) => post.tags.some((t) => t.toLowerCase() === normalizedTag));
+}
+
+export function getRelatedPosts(slug: string, tags: string[], limit = 3): PostMeta[] {
+  const allPosts = getAllPostsMeta().filter((p) => p.slug !== slug);
+  
+  if (tags.length === 0) {
+    return allPosts.slice(0, limit);
+  }
+
+  const normalizedTags = tags.map((t) => t.toLowerCase());
+
+  const scored = allPosts.map((post) => {
+    const postTags = post.tags.map((t) => t.toLowerCase());
+    const overlap = postTags.filter((t) => normalizedTags.includes(t)).length;
+    return { post, score: overlap };
+  });
+
+  return scored
+    .filter((s) => s.score > 0)
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.post.timestamp - a.post.timestamp;
+    })
+    .slice(0, limit)
+    .map((s) => s.post);
+}
+
+export function getAllTags(): { tag: string; count: number }[] {
+  const tagMap = new Map<string, number>();
+  for (const post of getAllPostsMeta()) {
+    for (const tag of post.tags) {
+      const normalized = tag.toLowerCase();
+      tagMap.set(normalized, (tagMap.get(normalized) || 0) + 1);
+    }
+  }
+  return Array.from(tagMap.entries())
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count);
 }
