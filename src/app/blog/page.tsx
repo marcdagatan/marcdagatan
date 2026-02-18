@@ -7,6 +7,26 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://marcuyyy.com";
 export const metadata = {
   title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
   description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
+  openGraph: {
+    title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
+    description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
+    type: "website",
+    url: `${SITE_URL}/blog`,
+    images: [
+      {
+        url: `${SITE_URL}/blog/opengraph-image`,
+        width: 1200,
+        height: 630,
+        alt: "Marc Uy Dagatan - Blog",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
+    description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
+    images: [`${SITE_URL}/blog/opengraph-image`],
+  },
 };
 
 export default function BlogIndex() {

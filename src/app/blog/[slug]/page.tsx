@@ -22,7 +22,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const { meta } = getPostSource(slug);
-  const ogImageUrl = `${SITE_URL}/api/og?slug=${slug}`;
+  const ogImageUrl = `${SITE_URL}/blog/${slug}/opengraph-image`;
   
   return {
     title: `${meta.title} | Marc Uy Dagatan`,
