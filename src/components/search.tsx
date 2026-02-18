@@ -24,6 +24,13 @@ export function Search() {
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+    setQuery("");
+    setResults([]);
+    setSelectedIndex(-1);
+  }, []);
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -54,7 +61,7 @@ export function Search() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, results, selectedIndex]);
+  }, [isOpen, results, selectedIndex, handleClose]);
 
   useEffect(() => {
     if (isOpen && index.length === 0) {
@@ -93,13 +100,6 @@ export function Search() {
       selectedElement?.scrollIntoView({ block: "nearest", behavior: "smooth" });
     }
   }, [selectedIndex]);
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
-    setQuery("");
-    setResults([]);
-    setSelectedIndex(-1);
-  }, []);
 
   if (!isOpen) {
     return (

@@ -9,7 +9,7 @@ export function SiteFooter() {
       <div className="mx-auto max-w-[1100px] px-4 py-10 text-sm">
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <p className="text-muted-foreground leading-relaxed">
-            I write my own stuff. Sometimes it's good, sometimes it's… a war crime against grammar.
+            I write my own stuff. Sometimes it&apos;s good, sometimes it&apos;s… a war crime against grammar.
             ChatGPT cleans up the mess. Judge accordingly.
           </p>
           <nav className="flex flex-wrap gap-4">
