@@ -1,9 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getPostSource } from "@/lib/posts";
+import { SITE_URL } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://marcuyyy.com";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -14,16 +13,12 @@ export async function GET(request: Request) {
   }
 
   let title = slug;
-  let date = "";
+  let displayDate = "";
 
   try {
     const { meta } = getPostSource(slug);
     title = meta.title;
-    date = new Date(meta.timestamp).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    displayDate = meta.displayDate;
   } catch {
     // Use slug as title if post not found
   }
@@ -88,7 +83,7 @@ export async function GET(request: Request) {
               margin: 0,
             }}
           >
-            {date}
+            {displayDate}
           </p>
           <p
             style={{

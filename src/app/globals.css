@@ -1,31 +1,58 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Default to dark theme */
+/* ---------------------------------------------------------------------------
+   V3 visual system: black-canvas editorial fight journal.
+
+   Near-monochrome warm black/paper with one scarce crimson accent, small
+   radius, fine rules, flat surfaces, restrained shadows. Crimson is reserved
+   for links, active/current state, focus, and rare emphasis, never for every
+   heading or badge.
+--------------------------------------------------------------------------- */
+
+/* Dark theme (default): near-black warm canvas */
 :root {
-  --background: #000000;
-  --foreground: #ededed;
-  --accent: rgb(215, 38, 56);
+  --background: #0b0a09;
+  --foreground: #f0ece3;
+  --accent: #e84556;
   --accent-foreground: #ffffff;
-  --muted: hsl(0 0% 60%);
-  --muted-foreground: hsl(0 0% 60%);
-  --border: hsl(0 0% 20%);
-  --success: hsl(142 76% 36%);
-  --warning: hsl(38 92% 50%);
-  --error: hsl(0 84% 60%);
+  --muted: #a29a8d;
+  --muted-foreground: #a29a8d;
+  --border: #26221f;
+  --elevated: #14120f;
+  --success: hsl(142 70% 42%);
+  --warning: hsl(38 92% 55%);
+  --error: hsl(0 84% 62%);
 }
 
+/* Light theme: warm paper, printed fight-journal feel */
 .light {
-  --background: #ffffff;
-  --foreground: #171717;
-  --accent: rgb(215, 38, 56);
+  --background: #f6f1e7;
+  --foreground: #161310;
+  --accent: #b91f30;
   --accent-foreground: #ffffff;
-  --muted: hsl(0 0% 45%);
-  --muted-foreground: hsl(0 0% 45%);
-  --border: hsl(0 0% 85%);
-  --success: hsl(142 76% 36%);
-  --warning: hsl(38 92% 50%);
-  --error: hsl(0 84% 50%);
+  --muted: #6e675b;
+  --muted-foreground: #6e675b;
+  --border: #ddd5c6;
+  --elevated: #fbf7ef;
+  --success: hsl(142 60% 32%);
+  --warning: hsl(38 92% 42%);
+  --error: hsl(0 84% 46%);
+}
+
+/* Same dark tokens under `.dark` for libraries that add the class. */
+.dark {
+  --background: #0b0a09;
+  --foreground: #f0ece3;
+  --accent: #e84556;
+  --accent-foreground: #ffffff;
+  --muted: #a29a8d;
+  --muted-foreground: #a29a8d;
+  --border: #26221f;
+  --elevated: #14120f;
+  --success: hsl(142 70% 42%);
+  --warning: hsl(38 92% 55%);
+  --error: hsl(0 84% 62%);
 }
 
 @theme inline {
@@ -36,6 +63,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-elevated: var(--elevated);
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-error: var(--error);
@@ -47,21 +75,26 @@
   --font-serif: var(--font-playfair);
 }
 
-/* Use `.dark` class if needed by other libs */
-.dark {
-  --background: #000000;
-  --foreground: #ededed;
-  --accent: rgb(215, 38, 56);
-  --accent-foreground: #ffffff;
-  --muted: hsl(0 0% 60%);
-  --muted-foreground: hsl(0 0% 60%);
-  --border: hsl(0 0% 20%);
+html {
+  /* Anchor jumps (TOC, heading links) land below the sticky header and above
+     the permanently fixed share bar on article routes. */
+  scroll-padding-top: 5rem;
+  scroll-padding-bottom: 4.5rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 html,
 body {
   background: var(--background);
   color: var(--foreground);
+  /* Safety net: code and long URLs are contained in their own scroll/wrap
+     containers, so the page itself must never move sideways. */
+  overflow-x: clip;
   font-family:
     var(--font-helvetica-neue),
     "Helvetica Neue",
@@ -74,7 +107,6 @@ body {
     "Noto Sans",
     "Liberation Sans",
     sans-serif;
-  /* Optimized for readability: 16-18px base, generous line-height, slight tracking */
   font-size: clamp(1rem, 1.5vw, 1.125rem);
   line-height: 1.65;
   letter-spacing: 0.005em;
@@ -83,13 +115,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Focus-visible styles for accessibility */
+/* Visible, aesthetic focus states in both themes. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
-/* Smooth transitions for interactive elements */
 a,
 button {
   transition:
@@ -99,185 +130,52 @@ button {
     opacity 0.15s ease;
 }
 
-/* Selection styling with accent color */
 ::selection {
   background-color: var(--accent);
   color: var(--accent-foreground);
 }
 
-/* Typography tweaks — optimized for long-form reading */
-.prose {
-  font-family: var(--font-sans);
-  /* Optimal reading size: 18-20px for body text */
-  font-size: clamp(1.0625rem, 2vw, 1.1875rem);
-  line-height: 1.75;
-  --tw-prose-body: var(--foreground);
-  --tw-prose-headings: var(--foreground);
-  --tw-prose-links: var(--accent);
-  --tw-prose-bold: var(--foreground);
-  --tw-prose-counters: var(--muted);
-  --tw-prose-bullets: var(--muted);
-  --tw-prose-hr: var(--border);
-  --tw-prose-quotes: var(--foreground);
-  --tw-prose-quote-borders: var(--border);
-  --tw-prose-captions: var(--muted);
-  --tw-prose-code: var(--foreground);
-  --tw-prose-pre-code: var(--foreground);
-  --tw-prose-pre-bg: hsl(0 0% 12%);
-  --tw-prose-th-borders: var(--border);
-  --tw-prose-td-borders: var(--border);
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
+/* ---------------------------------------------------------------------------
+   Motion. Functional only: dialog, disclosure, copied feedback. Instant state
+   changes for reduced-motion users.
+--------------------------------------------------------------------------- */
 
-/* Link hover states in prose */
-.prose a {
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.2em;
-  transition: color 0.15s ease;
-}
-
-.prose a:hover {
-  color: var(--accent);
-}
-
-/* Paragraph spacing for better rhythm */
-.prose p {
-  margin-bottom: 1.25em;
-}
-
-/* Headings use Playfair Display */
-h1,
-h2 {
-  font-family: var(--font-playfair), Georgia, serif !important;
-  letter-spacing: -0.01em;
-}
-h1 {
-  font-weight: 700;
-}
-h2 {
-  font-weight: 700;
-}
-
-/* Ensure Tailwind Typography headings also use Playfair */
-.prose :where(h1, h2):not(:where([class~="not-prose"] *)) {
-  font-family: var(--font-playfair), Georgia, serif !important;
-}
-
-/* Heading sizes (only for MDX content area) */
-.prose h1 {
-  font-size: clamp(2.25rem, 6vw, 5rem);
-  line-height: 1.05;
-}
-
-.prose h2 {
-  font-size: clamp(1.75rem, 4.5vw, 3rem);
-  line-height: 1.1;
-}
-
-/* Code block minimal styling */
-:where(pre) {
-  border-radius: 0.5rem;
-  border: 1px solid hsl(0 0% 20% / 0.6);
-  background: hsl(0 0% 12%);
-  padding: 1rem;
-  overflow-x: auto;
-  overflow-y: visible;
-  white-space: pre;
-  -webkit-overflow-scrolling: touch;
-}
-
-:where(code) {
-  font-family:
-    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
-}
-
-/* Inline code styling */
-.inline-code {
-  font-family:
-    var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco,
-    Consolas, "Liberation Mono", "Courier New", monospace;
-  background: hsl(0 0% 100% / 0.06);
-  border: 1px solid hsl(0 0% 100% / 0.1);
-  padding: 0.125rem 0.375rem;
-  border-radius: 0.375rem;
-  font-size: 0.95em;
-}
-
-/* Ensure long lines don't wrap in blocks but allow horizontal scroll */
-:where(pre > code) {
-  white-space: pre;
-  word-break: normal;
-  display: inline-block;
-  min-width: 100%;
-}
-
-/* Pretty-code figure wrapper should also scroll if present */
-:where(figure[data-rehype-pretty-code-figure]) {
-  overflow-x: auto;
-}
-
-/* On tablets/desktops, wrap long code lines instead of scrolling */
-@media (min-width: 768px) {
-  :where(figure[data-rehype-pretty-code-figure]) {
-    overflow-x: visible;
+@keyframes dialog-fade-in {
+  from {
+    opacity: 0;
   }
-  :where(pre) {
-    overflow-x: visible;
-    white-space: pre-wrap;
-  }
-  :where(pre > code) {
-    white-space: pre-wrap;
-    word-break: break-word;
+  to {
+    opacity: 1;
   }
 }
 
-/* On mobile, always enable horizontal scroll for code blocks */
-@media (max-width: 767px) {
-  :where(figure[data-rehype-pretty-code-figure]) {
-    overflow-x: scroll;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-x;
+@keyframes dialog-pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.97);
   }
-  :where(pre) {
-    overflow-x: scroll;
-    overflow-y: visible;
-    -webkit-overflow-scrolling: touch;
-    white-space: pre;
-    touch-action: pan-x;
-  }
-  :where(pre > code) {
-    display: inline-block;
-    min-width: 100%;
-    white-space: pre;
-  }
-  /* Full-bleed scroll area so the finger can start the swipe inside the block */
-  :where(figure[data-rehype-pretty-code-figure], pre) {
-    margin-left: -1rem;
-    margin-right: -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    overscroll-behavior-x: contain;
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
-/* rehype-pretty-code utilities */
-:where(code[data-theme]) {
-  color: inherit;
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-:where(span[data-line]) {
-  display: inline-block;
-  width: 100%;
-}
-
-:where(mark[data-highlighted="true"]) {
-  background: hsl(0 0% 100% / 0.06);
-  border-left: 3px solid hsl(0 0% 100% / 0.1);
-  margin-left: -0.75rem;
-  padding-left: 0.75rem;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

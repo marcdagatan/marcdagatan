@@ -1,13 +1,17 @@
 ---
 title: "AI Vibe Coding for the Uninitiated"
-date: "2025-08-11 1:15 AM"
-description: "A beginner's on-ramp to jamming with AI—fast sketches, real guardrails, and code you won't be ashamed to keep."
-tags: ["ai", "coding", "cursor", "tutorial", "development", "workflow"]
+date: "2025-08-11T01:15:00+08:00"
+description: "A beginner's on-ramp to jamming with AI: fast sketches, real guardrails, and code you won't be ashamed to keep."
+lane: "systems"
+format: "guide"
+topics: ["ai", "tools", "engineering"]
+featured: false
+draft: false
 ---
 
 ## Let’s Get This Straight
 
-“AI vibe coding” isn’t wizardry. It’s you, your editor, and a hyperactive pair partner who never gets tired and will happily produce a thousand lines of “okay-ish” code if you let it. You don’t bring AI in to _finish_ the work—you bring it in to _accelerate_ the figuring-it-out stage. The sketchbook phase. The part where you don’t know if your hunch even holds water.
+“AI vibe coding” isn’t wizardry. It’s you, your editor, and a hyperactive pair partner who never gets tired and will happily produce a thousand lines of “okay-ish” code if you let it. You don’t bring AI in to _finish_ the work; you bring it in to _accelerate_ the figuring-it-out stage. The sketchbook phase. The part where you don’t know if your hunch even holds water.
 
 Used well, this is jet fuel. Used poorly, it’s a shortcut to a codebase that smells like a food court. The difference is ownership. You lead. The bot follows.
 
@@ -17,7 +21,7 @@ Used well, this is jet fuel. Used poorly, it’s a shortcut to a codebase that s
 
 Vibe sessions live in isolation. Not because your ideas are bad, but because creative chaos should never land on `main` by accident. Start every session by giving yourself permission to be messy _over there_, while keeping shipped code boring _over here_.
 
-```bash
+```bash title="Start clean: spike branch"
 # start clean
 git switch -c ai-spike/prerender-chart-hover
 # optional: ensure nothing leaks to prod
@@ -26,7 +30,7 @@ echo "NEXT_PUBLIC_VIBE=1" > .env.local
 
 Then wire a tiny gate in your app so experimental paths are explicit:
 
-```tsx
+```tsx title="app/Widget.tsx"
 // app/Widget.tsx
 const vibeMode = process.env.NEXT_PUBLIC_VIBE === "1";
 
@@ -66,7 +70,7 @@ Notice the shape: specific, scoped, opinionated. You’re steering.
 
 What a decent model will give back (edited here to be tight and readable):
 
-```tsx
+```tsx title="components/VibeChartDemo.tsx"
 // components/VibeChartDemo.tsx
 "use client";
 
@@ -149,7 +153,7 @@ Expect something like:
 // adds tabIndex and onFocus/onBlur, keeps the rest intact
 ```
 
-Now you’re not just copying—you’re directing.
+Now you’re not just copying; you’re directing.
 
 ---
 
@@ -183,11 +187,11 @@ Clarity compounds. Future-you will not file a complaint.
 
 ---
 
-## Use AI For Tests—Then Break Them Without Mercy
+## Use AI For Tests, Then Break Them Without Mercy
 
 Even if you’re new to testing, you can ask the model to scaffold a smoke test. Keep it tiny, run it, then _intentionally_ break the code and watch the test fail. That’s how you build trust.
 
-```ts
+```ts title="__tests__/VibeChartDemo.test.tsx"
 // __tests__/VibeChartDemo.test.tsx
 import { render, screen, fireEvent } from "@testing-library/react";
 import VibeChartDemo from "../components/VibeChartDemo";
@@ -287,7 +291,7 @@ Notice there’s no “AI” in the message. You own the change.
 
 ## When The Bot Is Confident And Wrong (It Happens)
 
-Sometimes you’ll get a polished answer that’s subtly off—wrong lifecycle hook, misread of framework behavior, or a stale pattern. Your job isn’t to spot _every_ mistake; it’s to spot the _shape_ of risk and press for clarity.
+Sometimes you’ll get a polished answer that’s subtly off: wrong lifecycle hook, misread of framework behavior, or a stale pattern. Your job isn’t to spot _every_ mistake; it’s to spot the _shape_ of risk and press for clarity.
 
 Ask directly:
 
@@ -305,7 +309,7 @@ End every vibe session with a ten-minute sweep. If you’re keeping it, polish. 
 
 A tiny `npm` script helps:
 
-```json
+```json title="package.json"
 // package.json
 {
   "scripts": {
@@ -323,4 +327,4 @@ Run, verify, move on.
 
 AI vibe coding is not about speed for its own sake. It’s about **shortening the distance** between “I wonder if…” and “I know.” You explore _with_ the model, you learn _from_ the model, but you always ship _as_ yourself. The bot can draft. You decide. That’s the whole game.
 
-When you’re new to this, that’s enough. Keep your playground fenced. Ask for minimal examples. Make the model explain itself. Humanize the code before it meets the rest of your repo. If that sounds boring—good. Boring is what survives.
+When you’re new to this, that’s enough. Keep your playground fenced. Ask for minimal examples. Make the model explain itself. Humanize the code before it meets the rest of your repo. If that sounds boring, good. Boring is what survives.

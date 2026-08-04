@@ -1,12 +1,16 @@
 ---
 title: "GLM-4.5 vs Claude Opus: The Price Gap That Feels Illegal"
-date: "2025-08-21 02:30 AM"
+date: "2025-08-21T02:30:00+08:00"
 description: "A full teardown of GLM-4.5 vs Claude Opus across light coding, heavy reasoning, and scale. Spoiler: GLM-4.5 is still cheaper, anywhere from 5× to 100× depending on the workload."
-tags: ["ai", "glm-4.5", "openrouter", "cost", "performance", "comparison"]
+lane: "systems"
+format: "review"
+topics: ["ai", "tools"]
+featured: false
+draft: false
 ---
 
 There are moments in tech where you stare at the numbers and think, _nah, this can’t be real_.  
-That’s exactly what happened when I compared my **GLM-4.5 usage** against **Claude Opus**. The gap isn’t just wide—it feels illegal.
+That’s exactly what happened when I compared my **GLM-4.5 usage** against **Claude Opus**. The gap isn’t just wide; it feels illegal.
 
 ---
 
@@ -28,7 +32,7 @@ Read that again: **~1M tokens for three cents.**
 
 ---
 
-## Cost Math — Clean and Comparable
+## Cost Math: Clean and Comparable
 
 | Metric               |   Claude Opus | GLM-4.5 (morning run) |             Delta |
 | -------------------- | ------------: | --------------------: | ----------------: |
@@ -57,7 +61,7 @@ From my dashboard:
 Here’s where it gets interesting:
 
 - **Morning Run (Light Coding):** Minimal overhead, lean prompts, straight coding tasks. Result: insane efficiency (107× cheaper than Opus).
-- **Sustained Logs (Heavy Reasoning):** Bigger prompts, longer contexts, deeper reasoning steps. Efficiency drops—but still between **5× and 17× cheaper** than Opus.
+- **Sustained Logs (Heavy Reasoning):** Bigger prompts, longer contexts, deeper reasoning steps. Efficiency drops, but still between **5× and 17× cheaper** than Opus.
 
 👉 Translation: even when I crank up context windows and force the model to think harder, GLM-4.5 never loses its cost edge. At worst, it’s 5× cheaper. At best, it’s 100× cheaper.
 
@@ -101,7 +105,7 @@ Either way, you’re keeping thousands in your pocket every sprint.
 ## Quality Notes (My Experience)
 
 - Accepted **~3k lines of code** already.
-- **Agentic loops** (“do, check, fix”) feel natural—tighter and fewer retries.
+- **Agentic loops** (“do, check, fix”) feel natural: tighter and fewer retries.
 - Performs better the more I throw at it, especially in multi-step reasoning.
 
 **Drawback:** No **image upload support** yet. If your workflow depends on multimodal, that’s a limitation. But for coding? **Hands down, GLM-4.5 is insane.**
@@ -111,7 +115,7 @@ Either way, you’re keeping thousands in your pocket every sprint.
 ## Caveats (Fair Play)
 
 - Pricing depends on provider (Cursor vs OpenRouter).
-- Heavy reasoning loads skew token usage—so always benchmark against _your_ workflow.
+- Heavy reasoning loads skew token usage, so always benchmark against _your_ workflow.
 - Cheap tokens don’t excuse bad ops: sandbox before prod.
 
 ---
@@ -138,7 +142,7 @@ Not all tokens are equal. Two regimes emerged from my tests:
 | **GLM‑4.5 Air**         | Lighter tier, similar usage patterns              |  **$0.00018844** |  **~5,306,859** |         **~17.43×** |
 | **Claude Opus**         | Cursor, thinking mode                             |  **$0.00328500** |    **~304,414** |              **1×** |
 
-**Interpretation:** The tighter and more code‑focused your loop, the closer you get to the best‑case numbers. As you add **heavier context and higher‑order reasoning**, effective cost rises—but GLM‑4.5 still beats Opus handily.
+**Interpretation:** The tighter and more code‑focused your loop, the closer you get to the best‑case numbers. As you add **heavier context and higher‑order reasoning**, effective cost rises, but GLM‑4.5 still beats Opus handily.
 
 ---
 
@@ -188,7 +192,7 @@ Even at **sustained** GLM‑4.5 rates, the 1B‑token bill is **~5.3× lower** t
 - **GLM‑4.5 sustained cost/1k** = $12.90 ÷ (21,000,000/1,000) = **$0.00061429**.
 - **GLM‑4.5 Air cost/1k** = $0.831 ÷ (4,410,000/1,000) = **$0.00018844**.
 
-Bottom line stays the same—**GLM‑4.5 is the better coder and the cheaper operator**.
+Bottom line stays the same: **GLM‑4.5 is the better coder and the cheaper operator**.
 
 ---
 

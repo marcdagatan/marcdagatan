@@ -1,61 +1,91 @@
-import { getAllPostsMeta, getAllTags } from "@/lib/posts";
-import { BlogContent } from "@/components/blog-content";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import { getAllPostsMeta, getAllTopics } from "@/lib/posts";
+import { ArchiveExplorer } from "@/components/archive/archive-explorer";
 import { JsonLd } from "@/components/json-ld";
+import {
+  absoluteUrl,
+  AUTHOR_NAME,
+  PUBLICATION_NAME,
+  RSS_ALTERNATE,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+} from "@/lib/site";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://marcuyyy.com";
-
-export const metadata = {
-  title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
-  description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
+export const metadata: Metadata = {
+  title: "The Fight Record",
+  description: SITE_DESCRIPTION,
+  alternates: {
+    canonical: "/blog",
+    types: {
+      "application/rss+xml": [RSS_ALTERNATE],
+    },
+  },
   openGraph: {
-    title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
-    description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
+    title: `${SITE_NAME} | The Fight Record`,
+    description: SITE_DESCRIPTION,
     type: "website",
-    url: `${SITE_URL}/blog`,
+    url: absoluteUrl("/blog"),
     images: [
       {
-        url: `${SITE_URL}/blog/opengraph-image`,
+        url: "/blog/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Marc Uy Dagatan - Blog",
+        alt: "Marc Uy Dagatan - The Fight Record",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Marc Uy Dagatan | Thoughts of a Mastermind in Pajamas",
-    description: "It's hard to plot world domination when your coffee's still brewing… but I'm making it work",
-    images: [`${SITE_URL}/blog/opengraph-image`],
+    title: `${SITE_NAME} | The Fight Record`,
+    description: SITE_DESCRIPTION,
+    images: ["/blog/opengraph-image"],
   },
 };
 
 export default function BlogIndex() {
   const posts = getAllPostsMeta();
-  const allTags = getAllTags();
+  const allTopics = getAllTopics();
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    name: "Marc — Blog",
-    description: "Thoughts of a Mastermind in Pajamas",
-    url: `${SITE_URL}/blog`,
+    name: PUBLICATION_NAME,
+    description: SITE_DESCRIPTION,
+    url: absoluteUrl("/blog"),
     author: {
       "@type": "Person",
-      name: "Marc Uy Dagatan",
+      name: AUTHOR_NAME,
     },
     blogPost: posts.map((post) => ({
       "@type": "BlogPosting",
       headline: post.title,
-      description: post.description ?? undefined,
+      description: post.description,
       datePublished: post.dateISO,
-      url: `${SITE_URL}/blog/${post.slug}`,
+      articleSection: post.lane,
+      keywords: post.topics,
+      url: absoluteUrl(`/blog/${post.slug}`),
     })),
   };
 
   return (
     <>
       <JsonLd data={jsonLd} />
-      <BlogContent posts={posts} allTags={allTags} />
+      {/* Suspense keeps the static shell while the client syncs filter state
+          with the URL on hydration and back/forward navigation. */}
+      <Suspense fallback={<ArchiveExplorerFallback />}>
+        <ArchiveExplorer posts={posts} allTopics={allTopics} />
+      </Suspense>
     </>
+  );
+}
+
+function ArchiveExplorerFallback() {
+  return (
+    <main>
+      <p className="pt-10 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+        Loading the record…
+      </p>
+    </main>
   );
 }

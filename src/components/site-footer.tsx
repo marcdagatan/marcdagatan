@@ -1,21 +1,37 @@
 import Link from "next/link";
 
+/**
+ * Publication footer: dry, self-aware, and useful. Implementation-note copy
+ * stays out; About, Archive, RSS, and the external profiles remain.
+ */
 export function SiteFooter() {
   const year = new Date().getFullYear();
-  const linkClass = "text-foreground/60 hover:text-accent transition-colors duration-200";
-  
+  const linkClass =
+    "font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors duration-150 hover:text-accent";
+
   return (
     <footer className="mt-16 border-t border-border">
-      <div className="mx-auto max-w-[1100px] px-4 py-10 text-sm">
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-          <p className="text-muted-foreground leading-relaxed">
-            I write my own stuff. Sometimes it&apos;s good, sometimes it&apos;s… a war crime against grammar.
-            ChatGPT cleans up the mess. Judge accordingly.
-          </p>
-          <nav className="flex flex-wrap gap-4">
-            <a href="https://marcuyyy.com" target="_blank" rel="noreferrer" className={linkClass}>
-              Blog
-            </a>
+      <div className="mx-auto max-w-[1100px] px-4 py-12">
+        <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-md">
+            <p className="font-serif text-xl font-bold">Thoughts of a Mastermind in Pajamas</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              I write my own stuff. Sometimes it&apos;s good, sometimes it&apos;s…
+              a war crime against grammar. ChatGPT cleans up the mess. Judge
+              accordingly.
+            </p>
+          </div>
+
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-3">
+            <Link href="/about" className={linkClass}>
+              About
+            </Link>
+            <Link href="/blog" className={linkClass}>
+              Archive
+            </Link>
+            <Link href="/rss.xml" className={linkClass}>
+              RSS
+            </Link>
             <a href="mailto:marc.dagatan@gmail.com" className={linkClass}>
               Email
             </a>
@@ -25,20 +41,14 @@ export function SiteFooter() {
             <a href="https://www.instagram.com/marc.uyyy/" target="_blank" rel="noreferrer" className={linkClass}>
               Instagram
             </a>
-            <Link href="/rss.xml" className={linkClass}>
-              RSS
-            </Link>
           </nav>
         </div>
-        <div className="mt-8 pt-6 border-t border-border/50 flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+
+        <div className="mt-10 flex flex-col gap-2 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} Marc Uy Dagatan. All rights reserved.</p>
-          <p>
-            Built with Next.js, MDX, and Vercel. Theme toggle, shiki highlighting, and minimal typography.
-          </p>
+          <p>Systems, scars, and selfhood: from the corner.</p>
         </div>
       </div>
     </footer>
   );
 }
-
-

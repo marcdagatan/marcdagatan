@@ -1,6 +1,8 @@
 import Script from "next/script";
 
 export function Matomo() {
+  if (process.env.NEXT_PUBLIC_MATOMO_DISABLED === "1") return null;
+
   const matomoUrl = process.env.NEXT_PUBLIC_MATOMO_URL || "//analytics.madsoftware.tech/";
   const siteId = process.env.NEXT_PUBLIC_MATOMO_SITE_ID || "3";
 
@@ -22,5 +24,4 @@ _paq.push(['enableLinkTracking']);
     </>
   );
 }
-
 

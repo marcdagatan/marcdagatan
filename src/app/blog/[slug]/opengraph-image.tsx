@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getPostSource } from "@/lib/posts";
+import { getPostSource, PostNotFoundError } from "@/lib/posts";
 
 export const alt = "Blog Post";
 export const size = {
@@ -9,7 +9,16 @@ export const size = {
 export const contentType = "image/png";
 
 export default async function Image({ params }: { params: { slug: string } }) {
-  const post = getPostSource(params.slug);
+  let post;
+  try {
+    post = getPostSource(params.slug);
+  } catch (error) {
+    if (error instanceof PostNotFoundError) {
+      post = null;
+    } else {
+      throw error;
+    }
+  }
   
   if (!post) {
     return new ImageResponse(
@@ -29,7 +38,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
           Post Not Found
         </div>
       ),
-      { ...size }
+      { ...size, status: 404 }
     );
   }
 
@@ -130,11 +139,7 @@ export default async function Image({ params }: { params: { slug: string } }) {
             marginTop: "40px",
           }}
         >
-          <span>{new Date(meta.timestamp).toLocaleDateString("en-US", { 
-            year: "numeric", 
-            month: "long", 
-            day: "numeric" 
-          })}</span>
+          <span>{meta.displayDate}</span>
           <span style={{ color: "rgb(215, 38, 56)" }}>·</span>
           <span>{meta.readingTime} min read</span>
           <span style={{ color: "rgb(215, 38, 56)" }}>·</span>

@@ -1,8 +1,12 @@
 ---
 title: "The Skills Router: Governing AI Coding Instead of Hoping It Behaves"
-date: "2026-02-18 01:45 PM"
-description: "Why bigger models aren't the answer — and how a deterministic Skills Router architecture turns AI coding from probabilistic guessing into governed execution."
-tags: ["ai", "architecture", "engineering", "system-design", "governance", "opencode"]
+date: "2026-02-18T13:45:00+08:00"
+description: "Why bigger models aren't the answer, and how a deterministic Skills Router architecture turns AI coding from probabilistic guessing into governed execution."
+lane: "systems"
+format: "essay"
+topics: ["ai", "governance", "engineering"]
+featured: true
+draft: false
 ---
 
 The industry keeps trying to solve AI coding with the same set of levers: larger models, longer context, and more “agentic” autonomy.
@@ -200,7 +204,7 @@ In `opencode-config`, governance starts with a single principle (and I mean that
 
 > Prefer retrieval-led reasoning over pre-training-led reasoning.
 
-I didn’t coin that line. It came from Vercel’s agent eval work on Next.js 16—specifically the moment they stopped treating “docs access” as a capability problem and started treating it as a control-plane problem: make the agent retrieve first, _by default_ (Vercel, “The hunch that paid off”).
+I didn’t coin that line. It came from Vercel’s agent eval work on Next.js 16, specifically the moment they stopped treating “docs access” as a capability problem and started treating it as a control-plane problem: make the agent retrieve first, _by default_ (Vercel, “The hunch that paid off”).
 
 This principle appears in `~/.config/opencode/AGENTS.md` and in the global instruction files referenced by `~/.config/opencode/opencode.json`.
 
