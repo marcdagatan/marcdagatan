@@ -12,7 +12,7 @@ import {
 export const metadata: Metadata = {
   title: "About",
   description:
-    "Marc Uy Dagatan: founder of MAD Software, fighter, actor, and dad. Why this publication has three lanes: systems, operators, and life.",
+    "Marc Uy Dagatan: founder, hands-on technical leader, fighter, actor, and dad. Systems, products, operators, and life.",
   alternates: {
     canonical: "/about",
     types: {
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: `About | ${SITE_NAME}`,
     description:
-      "Marc Uy Dagatan: founder of MAD Software, fighter, actor, and dad. Systems, scars, and selfhood.",
+      "Marc Uy Dagatan: founder, hands-on technical leader, fighter, actor, and dad. Systems, scars, and selfhood.",
     type: "profile",
     url: absoluteUrl("/about"),
     images: ["/opengraph-image"],
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `About | ${SITE_NAME}`,
     description:
-      "Marc Uy Dagatan: founder of MAD Software, fighter, actor, and dad. Systems, scars, and selfhood.",
+      "Marc Uy Dagatan: founder, hands-on technical leader, fighter, actor, and dad. Systems, scars, and selfhood.",
     images: ["/opengraph-image"],
   },
 };
@@ -50,9 +50,9 @@ export default function AboutPage() {
         </h1>
         <p className="mt-6 max-w-[52ch] text-lg leading-relaxed text-muted-foreground">
           I&apos;m Marc Uy Dagatan, founder of MAD Software, fighter, actor,
-          and dad. My life is a strange mix of business meetings, boxing
-          rounds, film scripts, and parenting moments that don&apos;t come with
-          a manual.
+          hands-on technical leader, and dad. My life is a strange mix of
+          business meetings, boxing rounds, film scripts, and parenting moments
+          that don&apos;t come with a manual.
         </p>
       </header>
 
@@ -70,6 +70,13 @@ export default function AboutPage() {
               , a governed AI-coding system I open-sourced rather than keep in
               the company vault. I believe the models work better inside
               deterministic control planes, and I build the tooling to prove it.
+            </p>
+            <p className="mt-4 leading-relaxed">
+              The rest of my work sits where product and operations collide:
+              AI agent platforms, clinical analytics, payment and marketplace
+              systems, and multi-location businesses. I lead architecture and
+              delivery, but I stay close to the code because the hard decisions
+              only become real when a system meets customers, data, and people.
             </p>
           </div>
 
