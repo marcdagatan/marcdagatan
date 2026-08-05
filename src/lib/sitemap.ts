@@ -9,6 +9,7 @@
 import type { MetadataRoute } from "next";
 import type { PostMeta } from "./post-data";
 import type { Topic } from "./topics";
+import { getCvPath } from "./cv/view";
 import { RSS_PATH } from "./site";
 
 type SitemapEntry = MetadataRoute.Sitemap[number];
@@ -20,7 +21,7 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
  * @param topics - Curated topic index.
  * @param siteUrl - Absolute site origin.
  * @param now - Current build time for the entry points.
- * @returns Sitemap entries ordered: home, about, CV, archive, RSS, posts, topics.
+ * @returns Sitemap entries ordered: home, about, CV readings, archive, RSS, posts, topics.
  */
 export function buildSitemapEntries(
   posts: readonly PostMeta[],
@@ -56,10 +57,16 @@ export function buildSitemapEntries(
       priority: 0.6,
     },
     {
-      url: `${siteUrl}/cv`,
+      url: `${siteUrl}${getCvPath("general")}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${siteUrl}${getCvPath("technical")}`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
     {
       url: `${siteUrl}/blog`,

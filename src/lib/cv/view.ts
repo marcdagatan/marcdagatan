@@ -14,6 +14,11 @@ export function resolveCvView(value: string | readonly string[] | undefined): Cv
   return value === "technical" ? "technical" : "general";
 }
 
+/** Returns the stable, crawlable URL for a CV reading. */
+export function getCvPath(view: CvView): string {
+  return view === "technical" ? "/cv?view=technical" : "/cv";
+}
+
 /** Selects a concise or fully technical reading without duplicating each role. */
 export function getCvExperienceView(experience: CvExperience, view: CvView): CvExperienceView {
   return view === "general"

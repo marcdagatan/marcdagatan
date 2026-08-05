@@ -1,37 +1,48 @@
 import type { Metadata } from "next";
 import { CvLedger } from "@/components/cv/cv-ledger";
-import { resolveCvView } from "@/lib/cv/view";
+import { getCvPath, resolveCvView } from "@/lib/cv/view";
 import { absoluteUrl, RSS_ALTERNATE, SITE_NAME } from "@/lib/site";
 
-const description =
+const generalDescription =
   "The professional record of Marc Uy Dagatan: full-stack engineering, technical leadership, teaching, and education.";
-
-export const metadata: Metadata = {
-  title: "CV",
-  description,
-  alternates: {
-    canonical: "/cv",
-    types: {
-      "application/rss+xml": [RSS_ALTERNATE],
-    },
-  },
-  openGraph: {
-    title: `CV | ${SITE_NAME}`,
-    description,
-    type: "profile",
-    url: absoluteUrl("/cv"),
-    images: ["/opengraph-image"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `CV | ${SITE_NAME}`,
-    description,
-    images: ["/opengraph-image"],
-  },
-};
+const technicalDescription =
+  "The detailed technical CV of Marc Uy Dagatan: architecture, platform modernization, engineering leadership, and delivery.";
 
 interface CvPageProps {
   readonly searchParams: Promise<{ readonly view?: string | string[] }>;
+}
+
+/** Generates a separate canonical record for each substantive CV reading. */
+export async function generateMetadata({ searchParams }: CvPageProps): Promise<Metadata> {
+  const view = resolveCvView((await searchParams).view);
+  const technical = view === "technical";
+  const title = technical ? "Technical CV" : "CV";
+  const description = technical ? technicalDescription : generalDescription;
+  const path = getCvPath(view);
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: path,
+      types: {
+        "application/rss+xml": [RSS_ALTERNATE],
+      },
+    },
+    openGraph: {
+      title: `${title} | ${SITE_NAME}`,
+      description,
+      type: "profile",
+      url: absoluteUrl(path),
+      images: ["/opengraph-image"],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | ${SITE_NAME}`,
+      description,
+      images: ["/opengraph-image"],
+    },
+  };
 }
 
 export default async function CvPage({ searchParams }: CvPageProps) {

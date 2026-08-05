@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatCvDate, formatDateRange, validateCvRecord } from "@/lib/cv/cv";
 import type { CvRecord } from "@/lib/cv/types";
-import { resolveCvView } from "@/lib/cv/view";
+import { getCvPath, resolveCvView } from "@/lib/cv/view";
 
 const validRecord: CvRecord = {
   person: {
@@ -71,6 +71,11 @@ describe("CV record", () => {
     expect(resolveCvView("technical")).toBe("technical");
     expect(resolveCvView("anything-else")).toBe("general");
     expect(resolveCvView(["technical"])).toBe("general");
+  });
+
+  it("uses distinct crawlable paths for each CV view", () => {
+    expect(getCvPath("general")).toBe("/cv");
+    expect(getCvPath("technical")).toBe("/cv?view=technical");
   });
 
 });
