@@ -189,6 +189,12 @@ export default function AboutPage() {
         >
           Read the fight record →
         </Link>
+        <Link
+          href="/cv"
+          className="mt-5 block text-sm text-accent underline decoration-1 underline-offset-[0.2em] hover:opacity-80"
+        >
+          View the professional record →
+        </Link>
       </section>
     </main>
   );

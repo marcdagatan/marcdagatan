@@ -179,3 +179,72 @@ button {
     scroll-behavior: auto !important;
   }
 }
+
+/* CV print sheet: scoped with :has() so print also works without JS. */
+@media print {
+  @page {
+    margin: 18mm;
+  }
+
+  body:has(.cv-page) {
+    --background: #f6f1e7 !important;
+    --foreground: #161310 !important;
+    --muted-foreground: #6e675b !important;
+    --border: #ddd5c6 !important;
+    --accent: #b91f30 !important;
+    background: var(--background) !important;
+    color: var(--foreground) !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body:has(.cv-page) #main-content {
+    max-width: none !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+  }
+
+  body:has(.cv-page) .site-header,
+  body:has(.cv-page) .site-footer,
+  body:has(.cv-page) .cv-print-control,
+  body:has(.cv-page) .cv-view-switch {
+    display: none !important;
+  }
+
+  body:has(.cv-page) .cv-page,
+  body:has(.cv-page) .cv-page * {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  body:has(.cv-page) .cv-page {
+    color: var(--foreground) !important;
+  }
+
+  body:has(.cv-page) .cv-page a {
+    color: var(--accent) !important;
+  }
+
+  body:has(.cv-page) .cv-ledger-grid {
+    grid-template-columns: 8rem minmax(0, 1fr) !important;
+    column-gap: 2rem !important;
+  }
+
+  body:has(.cv-page) .cv-section-label {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  body:has(.cv-page) .cv-experience-entry {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  body:has(.cv-page) .cv-contact a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+}

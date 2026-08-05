@@ -2,7 +2,7 @@ import Link from "next/link";
 
 /**
  * Publication footer: dry, self-aware, and useful. Implementation-note copy
- * stays out; About, Archive, RSS, and the external profiles remain.
+ * stays out; About, CV, Archive, RSS, and the external profiles remain.
  */
 export function SiteFooter() {
   const year = new Date().getFullYear();
@@ -10,7 +10,7 @@ export function SiteFooter() {
     "font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground transition-colors duration-150 hover:text-accent";
 
   return (
-    <footer className="mt-16 border-t border-border">
+    <footer className="site-footer mt-16 border-t border-border">
       <div className="mx-auto max-w-[1100px] px-4 py-12">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md">
@@ -26,6 +26,9 @@ export function SiteFooter() {
             <Link href="/about" className={linkClass}>
               About
             </Link>
+            <Link href="/cv" className={linkClass}>
+              CV
+            </Link>
             <Link href="/blog" className={linkClass}>
               Archive
             </Link>
@@ -37,6 +40,9 @@ export function SiteFooter() {
             </a>
             <a href="https://github.com/marcdagatan" target="_blank" rel="noreferrer" className={linkClass}>
               GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/marcdagatan/" target="_blank" rel="noreferrer" className={linkClass}>
+              LinkedIn ↗
             </a>
             <a href="https://www.instagram.com/marc.uyyy/" target="_blank" rel="noreferrer" className={linkClass}>
               Instagram

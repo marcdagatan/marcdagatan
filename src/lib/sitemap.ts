@@ -20,7 +20,7 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
  * @param topics - Curated topic index.
  * @param siteUrl - Absolute site origin.
  * @param now - Current build time for the entry points.
- * @returns Sitemap entries ordered: home, archive, RSS, posts, topics.
+ * @returns Sitemap entries ordered: home, about, CV, archive, RSS, posts, topics.
  */
 export function buildSitemapEntries(
   posts: readonly PostMeta[],
@@ -51,6 +51,12 @@ export function buildSitemapEntries(
     },
     {
       url: `${siteUrl}/about`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteUrl}/cv`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.6,
