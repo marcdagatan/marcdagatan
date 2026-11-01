@@ -2,57 +2,27 @@
 @plugin "@tailwindcss/typography";
 
 /* ---------------------------------------------------------------------------
-   V3 visual system: black-canvas editorial fight journal.
+   Tailwind tokens, mapped onto the house palette.
 
-   Near-monochrome warm black/paper with one scarce crimson accent, small
-   radius, fine rules, flat surfaces, restrained shadows. Crimson is reserved
-   for links, active/current state, focus, and rare emphasis, never for every
-   heading or badge.
+   Rooms own the color (components/house/styles/base.css). The --t-* colors
+   are registered @property values, so outside the frame (the portaled search
+   dialog) they resolve to the neutral house palette, and inside .ml-root they
+   follow the current room. Declaring on both re-resolves the aliases there.
 --------------------------------------------------------------------------- */
 
-/* Dark theme (default): near-black warm canvas */
-:root {
-  --background: #0b0a09;
-  --foreground: #f0ece3;
-  --accent: #e84556;
-  --accent-foreground: #ffffff;
-  --muted: #a29a8d;
-  --muted-foreground: #a29a8d;
-  --border: #26221f;
-  --elevated: #14120f;
-  --success: hsl(142 70% 42%);
-  --warning: hsl(38 92% 55%);
-  --error: hsl(0 84% 62%);
-}
-
-/* Light theme: warm paper, printed fight-journal feel */
-.light {
-  --background: #f6f1e7;
-  --foreground: #161310;
-  --accent: #b91f30;
-  --accent-foreground: #ffffff;
-  --muted: #6e675b;
-  --muted-foreground: #6e675b;
-  --border: #ddd5c6;
-  --elevated: #fbf7ef;
+:root,
+.ml-root {
+  --background: var(--t-bg);
+  --foreground: var(--t-ink);
+  --accent: var(--t-accent);
+  --accent-foreground: var(--t-bg);
+  --muted: var(--t-muted);
+  --muted-foreground: var(--t-muted);
+  --border: var(--t-line);
+  --elevated: var(--t-surface);
   --success: hsl(142 60% 32%);
   --warning: hsl(38 92% 42%);
   --error: hsl(0 84% 46%);
-}
-
-/* Same dark tokens under `.dark` for libraries that add the class. */
-.dark {
-  --background: #0b0a09;
-  --foreground: #f0ece3;
-  --accent: #e84556;
-  --accent-foreground: #ffffff;
-  --muted: #a29a8d;
-  --muted-foreground: #a29a8d;
-  --border: #26221f;
-  --elevated: #14120f;
-  --success: hsl(142 70% 42%);
-  --warning: hsl(38 92% 55%);
-  --error: hsl(0 84% 62%);
 }
 
 @theme inline {
@@ -71,15 +41,13 @@
     var(--font-helvetica-neue), "Helvetica Neue", Helvetica, Arial, system-ui,
     -apple-system, "Segoe UI", Roboto, "Noto Sans", "Liberation Sans",
     sans-serif;
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-playfair);
+  --font-mono: var(--ml-font-engineering), ui-monospace, Menlo, monospace;
+  --font-serif: var(--ml-font-life), Georgia, serif;
 }
 
 html {
-  /* Anchor jumps (TOC, heading links) land below the sticky header and above
-     the permanently fixed share bar on article routes. */
-  scroll-padding-top: 5rem;
-  scroll-padding-bottom: 4.5rem;
+  /* Anchor jumps (TOC, heading links) land below the sticky nav. */
+  scroll-padding-top: calc(var(--ml-nav-h, 64px) + 1rem);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -115,7 +83,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Visible, aesthetic focus states in both themes. */
+/* Visible focus states in every room. */
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -186,12 +154,13 @@ button {
     margin: 18mm;
   }
 
-  body:has(.cv-page) {
-    --background: #f6f1e7 !important;
-    --foreground: #161310 !important;
-    --muted-foreground: #6e675b !important;
-    --border: #ddd5c6 !important;
-    --accent: #b91f30 !important;
+  body:has(.cv-page),
+  body:has(.cv-page) .ml-root {
+    --background: #ffffff !important;
+    --foreground: #16181c !important;
+    --muted-foreground: #565a60 !important;
+    --border: #c6c9c3 !important;
+    --accent: #16181c !important;
     background: var(--background) !important;
     color: var(--foreground) !important;
     overflow: visible !important;
@@ -199,14 +168,18 @@ button {
     print-color-adjust: exact;
   }
 
-  body:has(.cv-page) #main-content {
+  body:has(.cv-page) #main-content,
+  body:has(.cv-page) .ml-page,
+  body:has(.cv-page) .ml-wrap {
     max-width: none !important;
     min-height: 0 !important;
     padding: 0 !important;
   }
 
-  body:has(.cv-page) .site-header,
-  body:has(.cv-page) .site-footer,
+  body:has(.cv-page) .ml-nav,
+  body:has(.cv-page) .ml-footer,
+  body:has(.cv-page) .ml-overlays,
+  body:has(.cv-page) .ml-skip,
   body:has(.cv-page) .cv-print-control,
   body:has(.cv-page) .cv-view-switch {
     display: none !important;

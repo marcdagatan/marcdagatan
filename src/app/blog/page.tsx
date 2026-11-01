@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
-import { getAllPostsMeta, getAllTopics } from "@/lib/posts";
-import { ArchiveExplorer } from "@/components/archive/archive-explorer";
+import { getAllPostsWithStats, toArchiveEntry } from "@/components/house/data";
+import { Archive } from "@/components/house/home/archive";
 import { JsonLd } from "@/components/json-ld";
 import {
   absoluteUrl,
@@ -13,7 +12,7 @@ import {
 } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "The Fight Record",
+  title: "Archive",
   description: SITE_DESCRIPTION,
   alternates: {
     canonical: "/blog",
@@ -22,7 +21,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: `${SITE_NAME} | The Fight Record`,
+    title: `${SITE_NAME} | Archive`,
     description: SITE_DESCRIPTION,
     type: "website",
     url: absoluteUrl("/blog"),
@@ -31,21 +30,20 @@ export const metadata: Metadata = {
         url: "/blog/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "Marc Uy Dagatan - The Fight Record",
+        alt: "Marc Uy Dagatan - Archive",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | The Fight Record`,
+    title: `${SITE_NAME} | Archive`,
     description: SITE_DESCRIPTION,
     images: ["/blog/opengraph-image"],
   },
 };
 
 export default function BlogIndex() {
-  const posts = getAllPostsMeta();
-  const allTopics = getAllTopics();
+  const posts = getAllPostsWithStats();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,23 +67,19 @@ export default function BlogIndex() {
   };
 
   return (
-    <>
+    <main className="ml-page">
       <JsonLd data={jsonLd} />
-      {/* Suspense keeps the static shell while the client syncs filter state
-          with the URL on hydration and back/forward navigation. */}
-      <Suspense fallback={<ArchiveExplorerFallback />}>
-        <ArchiveExplorer posts={posts} allTopics={allTopics} />
-      </Suspense>
-    </>
-  );
-}
-
-function ArchiveExplorerFallback() {
-  return (
-    <main>
-      <p className="pt-10 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-        Loading the record…
-      </p>
+      <header className="ml-wrap ml-page-head">
+        <p className="ml-eyebrow">The archive</p>
+        <h1 className="ml-page-title">Every piece, every room</h1>
+        <p className="ml-page-lede">
+          {posts.length} pieces across four rooms. Filter by room below, or search everything from the
+          nav.
+        </p>
+      </header>
+      <section aria-label="All pieces" className="ml-wrap ml-page-body">
+        <Archive entries={posts.map(toArchiveEntry)} />
+      </section>
     </main>
   );
 }

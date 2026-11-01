@@ -1,22 +1,12 @@
 import { test, expect } from "@playwright/test";
 
-test("unknown post slugs return a 404 page instead of crashing", async ({
-  page,
-}) => {
-  const response = await page.goto("/blog/definitely-not-a-post");
-  expect(response?.status()).toBe(404);
-  await expect(
-    page.getByRole("heading", { name: /round doesn.t exist/ })
-  ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /The fight record/i })
-  ).toBeVisible();
-});
-
-test("unknown top-level routes render the global 404", async ({ page }) => {
-  const response = await page.goto("/definitely-not-a-page");
-  expect(response?.status()).toBe(404);
-  await expect(
-    page.getByRole("heading", { name: /round doesn.t exist/ })
-  ).toBeVisible();
-});
+for (const path of ["/blog/definitely-not-a-post", "/definitely-not-a-page", "/lab", "/rooms/attic"]) {
+  test(`${path} renders the house 404`, async ({ page }) => {
+    const response = await page.goto(path);
+    expect(response?.status()).toBe(404);
+    await expect(page.getByRole("heading", { name: /There is no room here/ })).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Ways back" }).getByRole("link", { name: "Ring" })
+    ).toHaveAttribute("href", "/rooms/ring");
+  });
+}

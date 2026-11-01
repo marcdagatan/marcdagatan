@@ -36,6 +36,7 @@ describe("buildSitemapEntries", () => {
   const entries = buildSitemapEntries(
     posts,
     topics,
+    ["engineering", "ring"],
     "https://marcuyyy.com",
     new Date("2026-03-01T00:00:00.000Z")
   );
@@ -46,6 +47,12 @@ describe("buildSitemapEntries", () => {
     expect(urls).toContain("https://marcuyyy.com/about");
     expect(urls).toContain("https://marcuyyy.com/blog");
     expect(urls).toContain("https://marcuyyy.com/rss.xml");
+  });
+
+  it("includes a page for every room", () => {
+    const urls = entries.map((e) => e.url);
+    expect(urls).toContain("https://marcuyyy.com/rooms/engineering");
+    expect(urls).toContain("https://marcuyyy.com/rooms/ring");
   });
 
   it("includes every published post with an absolute URL", () => {

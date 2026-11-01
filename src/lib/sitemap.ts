@@ -2,8 +2,8 @@
  * Sitemap entry generation.
  *
  * Pure builder so the sitemap contract is unit-testable. Entries cover the
- * publication entry points, every published post, and curated topic pages
- * only.
+ * publication entry points, the room pages, every published post, and
+ * curated topic pages only.
  */
 
 import type { MetadataRoute } from "next";
@@ -19,13 +19,15 @@ type SitemapEntry = MetadataRoute.Sitemap[number];
  *
  * @param posts - Published posts.
  * @param topics - Curated topic index.
+ * @param rooms - Room ids, each served at /rooms/<id>.
  * @param siteUrl - Absolute site origin.
  * @param now - Current build time for the entry points.
- * @returns Sitemap entries ordered: home, about, CV readings, archive, RSS, posts, topics.
+ * @returns Sitemap entries ordered: home, about, CV readings, archive, RSS, rooms, posts, topics.
  */
 export function buildSitemapEntries(
   posts: readonly PostMeta[],
   topics: readonly { topic: Topic; count: number }[],
+  rooms: readonly string[],
   siteUrl: string,
   now: Date
 ): SitemapEntry[] {
@@ -34,6 +36,13 @@ export function buildSitemapEntries(
     lastModified: new Date(post.timestamp),
     changeFrequency: "monthly",
     priority: 0.7,
+  }));
+
+  const roomEntries: SitemapEntry[] = rooms.map((room) => ({
+    url: `${siteUrl}/rooms/${room}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.8,
   }));
 
   const topicEntries: SitemapEntry[] = topics.map(({ topic }) => ({
@@ -80,6 +89,7 @@ export function buildSitemapEntries(
       changeFrequency: "daily",
       priority: 0.3,
     },
+    ...roomEntries,
     ...postEntries,
     ...topicEntries,
   ];

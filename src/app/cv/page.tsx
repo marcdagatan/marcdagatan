@@ -46,5 +46,11 @@ export async function generateMetadata({ searchParams }: CvPageProps): Promise<M
 }
 
 export default async function CvPage({ searchParams }: CvPageProps) {
-  return <CvLedger view={resolveCvView((await searchParams).view)} />;
+  return (
+    <main className="ml-page ml-cv">
+      <div className="ml-wrap ml-page-body">
+        <CvLedger view={resolveCvView((await searchParams).view)} />
+      </div>
+    </main>
+  );
 }

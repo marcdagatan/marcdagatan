@@ -1,0 +1,104 @@
+/* ---------------------------------------------------------------------------
+   Plain pages in the frame: archive, topic collections, CV, 404, and the
+   skip link. They wear the neutral home/house theme and stay static: no
+   entrances on display type, no loops.
+--------------------------------------------------------------------------- */
+
+.ml-root .ml-skip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  padding: 8px 12px;
+  background: var(--t-ink);
+  color: var(--t-bg);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+
+.ml-root .ml-skip:focus-visible {
+  transform: none;
+  outline: 2px solid var(--t-accent);
+  outline-offset: 2px;
+}
+
+.ml-root .ml-page {
+  padding-block: clamp(40px, 7vw, 96px) clamp(56px, 8vw, 120px);
+}
+
+.ml-root .ml-page-head {
+  display: grid;
+  gap: 14px;
+  padding-bottom: clamp(24px, 4vw, 40px);
+}
+
+.ml-root .ml-page-title {
+  max-width: 18ch;
+  font-family: var(--t-display);
+  font-style: var(--t-display-style);
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-display-track);
+  line-height: var(--t-display-lead);
+  font-size: clamp(40px, 7vw, 88px);
+  overflow-wrap: anywhere;
+}
+
+.ml-root .ml-page-lede {
+  max-width: 58ch;
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.5;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-page-meta {
+  font-size: 14px;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-page-body {
+  display: grid;
+  gap: 24px;
+}
+
+/* 404 ---------------------------------------------------------------------- */
+
+.ml-root .ml-lost-rooms {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  --frame-ink: var(--t-ink);
+}
+
+.ml-root .ml-lost-room {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid var(--t-line);
+  font-size: 17px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: border-color 0.2s ease;
+}
+
+.ml-root .ml-lost-room:focus-visible {
+  border-color: var(--t-ink);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-lost-room:hover {
+    border-color: var(--t-ink);
+  }
+}
+
+/* CV: the ledger keeps its Tailwind markup; tokens are remapped in
+   globals.css. This only sets the reading column. */
+.ml-root .ml-cv .ml-page-body {
+  max-width: 1080px;
+}
+
+.ml-root .ml-cv a {
+  text-underline-offset: 3px;
+}

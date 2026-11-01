@@ -1,0 +1,180 @@
+/* ---------------------------------------------------------------------------
+   Room-to-room View Transitions.
+
+   These are document-level pseudo-elements, so every rule is gated on
+   html[data-ml-to], which the shell sets only for the duration of its own
+   transitions. The destination room picks the choreography:
+
+     engineering  old recedes, new plots in behind a moving scan edge
+     ring         old is punched out, new slams in and settles
+     screen       fade through black, projector flicker on the way up
+     life         new spreads like ink from the click point
+     home/house   quiet crossfade with a slight lift
+
+   The nav has its own group, so it morphs instead of crossfading with the
+   page. A clicked floor-plan room morphs into the destination hero.
+--------------------------------------------------------------------------- */
+
+html[data-ml-to]::view-transition-group(root) {
+  animation-duration: 0.8s;
+}
+
+html[data-ml-to]::view-transition-old(root),
+html[data-ml-to]::view-transition-new(root) {
+  mix-blend-mode: normal;
+}
+
+html[data-ml-to]::view-transition-group(ml-nav) {
+  animation-duration: 0.6s;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-ml-to]::view-transition-old(ml-nav) {
+  animation: ml-vt-nav-out 0.3s ease-in both;
+}
+
+html[data-ml-to]::view-transition-new(ml-nav) {
+  animation: ml-vt-nav-in 0.55s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+html[data-ml-to]::view-transition-group(ml-hero) {
+  animation-duration: 0.75s;
+  animation-timing-function: cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+html[data-ml-to]::view-transition-old(ml-hero),
+html[data-ml-to]::view-transition-new(ml-hero) {
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The tile's snapshot only seeds the morph; get it out of the way early so
+   its label never ghosts over the new hero type. */
+html[data-ml-to]::view-transition-old(ml-hero) {
+  animation: ml-vt-fade-out 0.22s ease both;
+}
+
+html[data-ml-to]::view-transition-new(ml-hero) {
+  animation: ml-vt-fade-in 0.45s ease 0.08s both;
+}
+
+@keyframes ml-vt-nav-out {
+  to { opacity: 0; transform: translateY(-40%); }
+}
+
+@keyframes ml-vt-nav-in {
+  from { opacity: 0; transform: translateY(-60%); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Home and house */
+html[data-ml-to="home"]::view-transition-old(root),
+html[data-ml-to="house"]::view-transition-old(root) {
+  animation: ml-vt-fade-out 0.45s ease both;
+}
+html[data-ml-to="home"]::view-transition-new(root),
+html[data-ml-to="house"]::view-transition-new(root) {
+  animation: ml-vt-lift-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+/* Engineering */
+html[data-ml-to="engineering"]::view-transition-old(root) {
+  animation: ml-vt-recede 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+html[data-ml-to="engineering"]::view-transition-new(root) {
+  animation: ml-vt-plot 0.9s cubic-bezier(0.7, 0, 0.2, 1) both;
+}
+
+/* Ring */
+html[data-ml-to="ring"]::view-transition-group(root) {
+  animation-duration: 0.55s;
+}
+html[data-ml-to="ring"]::view-transition-old(root) {
+  animation: ml-vt-punch-out 0.35s cubic-bezier(0.5, 0, 0.75, 0) both;
+}
+html[data-ml-to="ring"]::view-transition-new(root) {
+  animation: ml-vt-slam 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) 0.08s both;
+}
+
+/* Screen */
+html[data-ml-to="screen"]::view-transition {
+  background: #05070c;
+}
+html[data-ml-to="screen"]::view-transition-group(root) {
+  animation-duration: 1.4s;
+}
+html[data-ml-to="screen"]::view-transition-old(root) {
+  animation: ml-vt-fade-out 0.55s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+html[data-ml-to="screen"]::view-transition-new(root) {
+  animation: ml-vt-flicker-in 1s linear 0.5s both;
+}
+
+/* Life */
+html[data-ml-to="life"]::view-transition-group(root) {
+  animation-duration: 1.1s;
+}
+html[data-ml-to="life"]::view-transition-old(root) {
+  animation: ml-vt-soften 1s ease both;
+}
+html[data-ml-to="life"]::view-transition-new(root) {
+  animation: ml-vt-ink 1.1s cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+@keyframes ml-vt-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes ml-vt-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes ml-vt-lift-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes ml-vt-recede {
+  to { opacity: 0.25; transform: scale(0.96); }
+}
+
+@keyframes ml-vt-plot {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes ml-vt-punch-out {
+  to { opacity: 0; transform: scale(1.14) rotate(-2.5deg); }
+}
+
+@keyframes ml-vt-slam {
+  0% { opacity: 0; transform: scale(1.28); }
+  50% { opacity: 1; transform: scale(0.97); }
+  72% { transform: scale(1.012); }
+  100% { opacity: 1; transform: none; }
+}
+
+@keyframes ml-vt-flicker-in {
+  /* Projector warming up: one slow, shallow dip. Never a strobe (WCAG 2.3.1). */
+  0% { opacity: 0; }
+  45% { opacity: 0.85; }
+  65% { opacity: 0.65; }
+  100% { opacity: 1; }
+}
+
+@keyframes ml-vt-soften {
+  to { opacity: 0; transform: scale(1.03); }
+}
+
+@keyframes ml-vt-ink {
+  from { clip-path: circle(0 at var(--ml-vt-x, 50%) var(--ml-vt-y, 50%)); }
+  to { clip-path: circle(150vmax at var(--ml-vt-x, 50%) var(--ml-vt-y, 50%)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-ml-to]::view-transition-group(*),
+  html[data-ml-to]::view-transition-old(*),
+  html[data-ml-to]::view-transition-new(*) {
+    animation: none !important;
+  }
+}

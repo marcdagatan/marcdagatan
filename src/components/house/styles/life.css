@@ -1,0 +1,678 @@
+/* ---------------------------------------------------------------------------
+   Life: a notebook. Ruled paper, soft italic serif, plum ink, handwriting
+   in the margins, growth rings, and motion that blooms and drifts.
+--------------------------------------------------------------------------- */
+
+/* Hero (room and essay) ------------------------------------------------------ */
+
+.ml-root .ml-life-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(90deg, transparent calc(clamp(20px, 4vw, 48px) - 14px), rgb(138 58 93 / 0.35) calc(clamp(20px, 4vw, 48px) - 14px) calc(clamp(20px, 4vw, 48px) - 12px), transparent calc(clamp(20px, 4vw, 48px) - 12px)),
+    repeating-linear-gradient(to bottom, transparent 0 35px, rgb(58 29 51 / 0.12) 35px 36px),
+    var(--t-field);
+  color: var(--t-field-ink);
+}
+
+/* Ink drop that spreads into the page. */
+.ml-root .ml-life-ink {
+  position: absolute;
+  z-index: -1;
+  left: 58%;
+  top: -10%;
+  width: 70vmax;
+  height: 70vmax;
+  border-radius: 46% 54% 52% 48% / 50% 44% 56% 50%;
+  background: radial-gradient(circle at 40% 45%, rgb(138 58 93 / 0.22), rgb(138 58 93 / 0.08) 45%, transparent 68%);
+  transform-origin: 30% 40%;
+  animation:
+    ml-ink 2.2s var(--ml-ease-out) 0.2s both,
+    ml-ink-breathe 12s ease-in-out 2.4s infinite;
+}
+
+@keyframes ml-ink {
+  from { transform: scale(0.05) rotate(-20deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+@keyframes ml-ink-breathe {
+  0%, 100% { transform: none; }
+  50% { transform: scale(1.04) rotate(3deg); }
+}
+
+.ml-root .ml-life-sprig {
+  position: absolute;
+  z-index: -1;
+  right: clamp(12px, 8vw, 140px);
+  bottom: 0;
+  width: clamp(90px, 12vw, 170px);
+  color: #8a3a5d;
+  opacity: 0.75;
+  transform-origin: 50% 100%;
+  animation: ml-sprig-sway 8s ease-in-out 3s infinite;
+}
+
+.ml-root .ml-life-draw {
+  stroke-dasharray: 400;
+  stroke-dashoffset: 400;
+  animation: ml-life-draw 2.4s var(--ml-ease-out) both;
+}
+
+.ml-root .ml-life-draw:nth-child(1) { animation-delay: 0.4s; }
+.ml-root .ml-life-draw:nth-child(2) { animation-delay: 1s; }
+.ml-root .ml-life-draw:nth-child(3) { animation-delay: 1.3s; }
+.ml-root .ml-life-draw:nth-child(4) { animation-delay: 1.6s; }
+.ml-root .ml-life-draw:nth-child(5) { animation-delay: 1.9s; }
+
+@keyframes ml-life-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (max-width: 639px) {
+  .ml-root .ml-life-sprig {
+    display: none;
+  }
+}
+
+@keyframes ml-sprig-sway {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-3deg); }
+}
+
+.ml-root .ml-life-hero-inner {
+  position: relative;
+  padding-top: clamp(48px, 8vw, 112px);
+  padding-bottom: clamp(56px, 8vw, 112px);
+}
+
+.ml-root .ml-life-date {
+  font-family: var(--ml-hand);
+  font-size: 26px;
+  color: #8a3a5d;
+  transform: rotate(-3deg);
+  transform-origin: left;
+  width: fit-content;
+  animation: ml-badge-drift 1.2s var(--ml-ease-out) 0.5s both;
+}
+
+.ml-root .ml-life-kicker {
+  margin-top: 10px;
+  font-family: var(--ml-soft);
+  font-size: 16px;
+  font-style: italic;
+  animation: ml-drift 1.2s var(--ml-ease-out) 0.7s both;
+}
+
+.ml-root .ml-life-title {
+  margin-top: 10px;
+  /* Fraunces italic "f" descends well past the tight 0.85 line box; keep the
+     subtitle clear of it at every size. */
+  padding-bottom: 0.12em;
+  font-size: clamp(7rem, 26vw, 22rem);
+  line-height: 0.85;
+  color: #3a1d33;
+  animation: ml-drift 1.6s var(--ml-ease-out) 0.3s both;
+}
+
+.ml-root .ml-life-line {
+  margin-top: 0.6em;
+  max-width: 34ch;
+  font-family: var(--ml-soft);
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.35;
+  animation: ml-drift 1.4s var(--ml-ease-out) 1.1s both;
+}
+
+.ml-root .ml-life-hero .ml-ess-back {
+  font-family: var(--ml-soft);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.ml-root .ml-life-hero .ml-ess-title {
+  margin-top: 12px;
+  font-size: clamp(2.8rem, 6.6vw, 6.2rem);
+  color: #3a1d33;
+  animation: ml-drift 1.5s var(--ml-ease-out) 0.3s both;
+}
+
+.ml-root .ml-life-hero .ml-ess-desc {
+  font-family: var(--ml-soft);
+  animation: ml-drift 1.4s var(--ml-ease-out) 0.9s both;
+}
+
+.ml-root .ml-life-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  margin-top: 28px;
+  font-family: var(--ml-soft);
+  animation: ml-fade-in 1s ease 1.4s both;
+}
+
+.ml-root .ml-life-stats dt {
+  font-family: var(--ml-hand);
+  font-size: 19px;
+  color: #8a3a5d;
+}
+
+.ml-root .ml-life-stats dd {
+  font-size: 17px;
+}
+
+/* Sections ---------------------------------------------------------------------- */
+
+.ml-root .ml-life-h2 {
+  font-size: clamp(42px, 5vw, 72px);
+}
+
+.ml-root .ml-life-sub {
+  margin-top: 12px;
+  max-width: 52ch;
+  font-size: 18px;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-life-letter-wrap {
+  display: grid;
+  gap: 36px;
+  padding-block: clamp(56px, 8vw, 112px);
+}
+
+@media (min-width: 1000px) {
+  .ml-root .ml-life-letter-wrap {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    gap: 7%;
+    align-items: center;
+  }
+}
+
+.ml-root .ml-life-letter {
+  position: relative;
+  padding: clamp(28px, 4vw, 48px);
+  background: #fbfaf5;
+  color: #2c1727;
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.05), 0 18px 40px -20px rgb(58 29 51 / 0.35);
+  transform: rotate(-0.8deg);
+  font-size: 19px;
+  line-height: 1.65;
+}
+
+.ml-root .ml-life-letter::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 18%;
+  width: 110px;
+  height: 28px;
+  background: rgb(199 214 189 / 0.8);
+  transform: rotate(-4deg);
+}
+
+.ml-root .ml-life-letter p + p {
+  margin-top: 14px;
+}
+
+.ml-root .ml-life-salute {
+  font-style: italic;
+}
+
+.ml-root .ml-life-sign {
+  margin-top: 18px !important;
+  font-family: var(--ml-hand);
+  font-size: 44px;
+  line-height: 1;
+  color: #8a3a5d;
+  transform: rotate(-4deg);
+  width: fit-content;
+}
+
+@supports (animation-timeline: view()) {
+  .ml-root .ml-life-sign,
+  .ml-root .ml-end-life-sign {
+    animation: ml-type linear both;
+    animation-timeline: view();
+    animation-range: entry 20% entry 100%;
+  }
+}
+
+.ml-root .ml-life-margin {
+  display: grid;
+  gap: 28px;
+}
+
+.ml-root .ml-life-note {
+  font-family: var(--ml-hand);
+  font-size: 26px;
+  line-height: 1.2;
+  color: #8a3a5d;
+  transform: rotate(-2deg);
+}
+
+.ml-root .ml-life-note:nth-child(2) {
+  transform: rotate(1.5deg);
+  margin-left: 12%;
+}
+
+.ml-root .ml-life-note-src {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--ml-soft);
+  font-size: 14px;
+  font-style: italic;
+  color: var(--t-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Growth rings */
+.ml-root .ml-life-rings {
+  padding-bottom: clamp(56px, 8vw, 112px);
+}
+
+.ml-root .ml-growth {
+  margin-top: 28px;
+  display: grid;
+  gap: 32px;
+}
+
+@media (min-width: 1000px) {
+  .ml-root .ml-growth {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    gap: 6%;
+    align-items: center;
+  }
+}
+
+.ml-root .ml-growth-art {
+  position: relative;
+  max-width: 560px;
+  width: 100%;
+  margin-inline: auto;
+}
+
+.ml-root .ml-growth-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  animation: ml-breathe 10s ease-in-out infinite;
+}
+
+.ml-root .ml-growth-ring {
+  fill: none;
+  stroke: color-mix(in srgb, var(--t-ink) 28%, transparent);
+  stroke-width: 1.4;
+  transform-box: view-box;
+  transform-origin: 200px 200px;
+  transform: scale(0);
+  opacity: 0;
+  transition:
+    transform 1s var(--ml-ease-out) calc(var(--i) * 110ms),
+    opacity 0.8s ease calc(var(--i) * 110ms),
+    stroke 0.25s ease,
+    stroke-width 0.25s ease;
+  pointer-events: stroke;
+  cursor: pointer;
+}
+
+.ml-root .ml-growth-ring[data-mine] {
+  stroke: #8a3a5d;
+  stroke-width: 3;
+}
+
+.ml-root .ml-growth[data-seen] .ml-growth-ring {
+  transform: none;
+  opacity: 1;
+}
+
+.ml-root .ml-growth-ring[data-active] {
+  stroke: #8a3a5d;
+  stroke-width: 6;
+  transition-delay: 0s;
+}
+
+.ml-root .ml-growth-heart {
+  fill: #8a3a5d;
+}
+
+.ml-root .ml-growth-caption {
+  margin-top: 12px;
+  min-height: 3.2em;
+  text-align: center;
+  font-family: var(--ml-soft);
+  font-size: 19px;
+  line-height: 1.3;
+}
+
+.ml-root .ml-growth-year {
+  display: block;
+  font-family: var(--ml-hand);
+  font-size: 22px;
+  color: #8a3a5d;
+}
+
+.ml-root .ml-growth-hint {
+  font-family: var(--ml-hand);
+  font-size: 23px;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-growth-list {
+  border-top: 1px solid var(--t-line);
+}
+
+.ml-root .ml-growth-list li {
+  border-bottom: 1px dashed var(--t-line);
+}
+
+.ml-root .ml-growth-link {
+  display: grid;
+  grid-template-columns: 4.4em minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 10px 6px;
+  text-decoration: none;
+  transition: transform 0.35s var(--ml-ease-out), color 0.25s ease;
+}
+
+.ml-root .ml-growth-link:focus-visible {
+  transform: translateX(6px);
+  color: #8a3a5d;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-growth-link:hover {
+    transform: translateX(6px);
+    color: #8a3a5d;
+  }
+}
+
+.ml-root .ml-growth-n {
+  font-family: var(--ml-hand);
+  font-size: 19px;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-growth-list li[data-mine] .ml-growth-n {
+  color: #8a3a5d;
+}
+
+.ml-root .ml-growth-title {
+  font-size: 17px;
+  line-height: 1.3;
+}
+
+.ml-root .ml-growth-list li[data-mine] .ml-growth-title {
+  font-weight: 600;
+}
+
+.ml-root .ml-growth-room {
+  font-family: var(--ml-sans);
+  font-size: 12px;
+  color: var(--t-muted);
+}
+
+/* Entries */
+.ml-root .ml-life-entries {
+  padding-bottom: clamp(56px, 8vw, 112px);
+}
+
+.ml-root .ml-life-entry-list {
+  margin-top: 24px;
+}
+
+.ml-root .ml-life-entry {
+  display: grid;
+  gap: 8px;
+  padding-block: 26px;
+  border-top: 1px solid var(--t-line);
+}
+
+@media (min-width: 768px) {
+  .ml-root .ml-life-entry {
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+.ml-root .ml-life-entry-date {
+  font-family: var(--ml-hand);
+  font-size: 24px;
+  color: #8a3a5d;
+  transform: rotate(-2deg);
+  transform-origin: left;
+}
+
+.ml-root .ml-life-entry-title {
+  font-size: clamp(30px, 3.4vw, 46px);
+}
+
+.ml-root .ml-life-entry-title a {
+  text-decoration: none;
+}
+
+.ml-root .ml-life-entry-desc {
+  margin-top: 10px;
+  max-width: 56ch;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.ml-root .ml-life-entry-meta {
+  margin-top: 8px;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--t-muted);
+}
+
+/* Beliefs */
+.ml-root .ml-life-beliefs {
+  padding-bottom: clamp(64px, 9vw, 128px);
+}
+
+.ml-root .ml-life-belief-list {
+  margin-top: 24px;
+  display: grid;
+  gap: 4px;
+}
+
+.ml-root .ml-life-belief-list li {
+  position: relative;
+  padding: 10px 0 10px 40px;
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.ml-root .ml-life-belief-list li::before {
+  content: "~";
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  font-family: var(--ml-hand);
+  font-size: 34px;
+  font-style: normal;
+  color: #8a3a5d;
+}
+
+/* A highlighter stroke drawn under a belief on hover. */
+.ml-root .ml-life-belief-list li::after {
+  content: "";
+  position: absolute;
+  left: 34px;
+  right: 0;
+  bottom: 12px;
+  height: 0.45em;
+  z-index: -1;
+  background: rgb(199 214 189 / 0.9);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s var(--ml-ease-out);
+}
+
+.ml-root .ml-life-belief-list li:hover::after {
+  transform: scaleX(1);
+}
+
+.ml-root .ml-life-closing {
+  margin-top: 32px;
+  font-family: var(--ml-hand);
+  font-size: 26px;
+  color: var(--t-muted);
+}
+
+/* Essay: journal grammar ----------------------------------------------------------- */
+
+.ml-root .ml-essay[data-room="life"] .ml-toc-title {
+  font-family: var(--ml-hand);
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #8a3a5d;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-toc {
+  font-family: var(--ml-soft);
+  font-size: 15px;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-toc-list a {
+  grid-template-columns: 1.8em minmax(0, 1fr);
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-toc-list a::before {
+  top: auto;
+  bottom: 2px;
+  left: 1.8em;
+  right: 8px;
+  width: auto;
+  height: 2px;
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-toc-list a[aria-current]::before {
+  transform: scaleX(1);
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-prose {
+  font-size: clamp(18px, 1.35vw, 20px);
+  line-height: 1.72;
+  font-variation-settings: "SOFT" 50, "opsz" 16;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-prose h2,
+.ml-root .ml-essay[data-room="life"] .ml-prose h3 {
+  font-family: var(--ml-soft);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.75em;
+  letter-spacing: -0.02em;
+  font-variation-settings: "SOFT" 100, "opsz" 72;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-sec-tag {
+  font-family: var(--ml-hand);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #8a3a5d;
+  transform: rotate(-3deg);
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-sec-margin {
+  font-family: var(--ml-hand);
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  line-height: 1.1;
+  color: #8a3a5d;
+  transform: rotate(-4deg);
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-prose blockquote {
+  border-left: 0;
+  padding-left: 0;
+  font-size: 1.15em;
+  color: #8a3a5d;
+}
+
+.ml-root .ml-essay[data-room="life"] .ml-prose hr {
+  width: 96px;
+  height: 10px;
+  margin-inline: auto;
+  background: radial-gradient(circle, #8a3a5d 0 2.5px, transparent 3px) 0 50% / 32px 10px repeat-x;
+}
+
+/* Closing note */
+.ml-root .ml-end-life-card {
+  position: relative;
+  max-width: 560px;
+  margin-inline: auto;
+  padding: clamp(28px, 4vw, 44px);
+  background: #fbfaf5;
+  color: #2c1727;
+  box-shadow: 0 18px 40px -20px rgb(58 29 51 / 0.35);
+  transform: rotate(0.8deg);
+  font-family: var(--ml-soft);
+  font-size: 19px;
+  line-height: 1.6;
+}
+
+.ml-root .ml-end-life-card::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  right: 18%;
+  width: 100px;
+  height: 26px;
+  background: rgb(199 214 189 / 0.8);
+  transform: rotate(5deg);
+}
+
+.ml-root .ml-end-life-sign {
+  margin-top: 16px;
+  font-family: var(--ml-hand);
+  font-size: 46px;
+  line-height: 1;
+  color: #8a3a5d;
+  transform: rotate(-4deg);
+  width: fit-content;
+}
+
+.ml-root .ml-end-life-date {
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--t-muted);
+}
+
+/* Reveal grammar: things drift up and settle like paper. */
+@keyframes ml-reveal-life {
+  /* No end keyframe: the reveal settles on the element's own value, so a filled
+     reveal never overrides hover transforms. */
+  from { opacity: 0.001; transform: translateY(28px) rotate(-1.2deg); }
+}
+
+@supports (animation-timeline: view()) {
+  .ml-root[data-route="life"] .ml-reveal,
+  .ml-root[data-route="life"] .ml-prose .ml-sec .ml-sec-tag {
+    animation-name: ml-reveal-life;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ml-root .ml-growth-ring {
+    transform: none;
+    opacity: 1;
+  }
+  .ml-root .ml-life-draw {
+    stroke-dashoffset: 0;
+  }
+}

@@ -1,0 +1,621 @@
+/* ---------------------------------------------------------------------------
+   Shared room furniture (next door, back link) and the essay reader:
+   body grid, TOC, sticky meters, prose, section headings, endings, "more".
+   Room files add each room's grammar on top.
+--------------------------------------------------------------------------- */
+
+/* Hero morph target: only named while a floor-plan room is morphing in. */
+html[data-ml-morph] .ml-root .ml-hero-morph {
+  view-transition-name: ml-hero;
+}
+
+.ml-root .ml-room,
+.ml-root .ml-essay {
+  font-family: var(--t-body);
+}
+
+/* Back link with a door that swings open on hover. */
+.ml-root .ml-ess-back {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 10px;
+  font-family: var(--ml-sans);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+
+.ml-root .ml-ess-back-door {
+  width: 28px;
+  height: 28px;
+  transform: scaleX(-1);
+}
+
+.ml-root .ml-ess-title {
+  font-size: clamp(2.6rem, 6.4vw, 6rem);
+  max-width: 17ch;
+}
+
+.ml-root .ml-ess-desc {
+  margin-top: 22px;
+  max-width: 52ch;
+  font-size: clamp(18px, 1.6vw, 21px);
+  line-height: 1.5;
+}
+
+.ml-root .ml-ess-also {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+
+.ml-root .ml-ess-also a {
+  text-decoration: none;
+}
+
+/* Frontmatter header image: a wide plate under the hero's stats, framed in the
+   room's ink. Ring hangs it like a poster with a hard offset shadow. */
+.ml-root .ml-ess-plate {
+  position: relative;
+  margin-top: clamp(28px, 4vw, 48px);
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  border: 2px solid var(--t-ink);
+  background: var(--t-surface);
+}
+
+.ml-root .ml-ess-plate-img {
+  object-fit: cover;
+}
+
+.ml-root .ml-ring-hero .ml-ess-plate {
+  border-width: 4px;
+  border-color: #15130f;
+  box-shadow: 10px 10px 0 #15130f;
+}
+
+.ml-root .ml-scr-hero .ml-ess-plate {
+  border-color: #eaa53e;
+}
+
+/* Next door ------------------------------------------------------------------ */
+
+.ml-root .ml-nextdoor {
+  background: var(--t-ink);
+  padding: var(--ml-wall);
+}
+
+.ml-root[data-theme="screen"] .ml-nextdoor {
+  background: #000;
+}
+
+.ml-root .ml-nextdoor-list {
+  display: grid;
+  gap: var(--ml-wall);
+}
+
+/* Three across only where "Engineering" fits at display size. */
+@media (min-width: 1000px) {
+  .ml-root .ml-nextdoor-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ml-root .ml-nextdoor-tile {
+  min-height: 180px;
+}
+
+@media (min-width: 1000px) {
+  .ml-root .ml-nextdoor-tile {
+    min-height: 230px;
+  }
+}
+
+.ml-root .ml-nextdoor-name {
+  margin-top: auto;
+  padding-top: 40px;
+  color: var(--tile-name);
+  font-size: clamp(40px, 5vw, 64px);
+  transition: color 0.45s ease, transform 0.6s var(--ml-ease-out);
+  transform-origin: left bottom;
+}
+
+.ml-root .ml-nextdoor-tile:hover .ml-nextdoor-name {
+  transform: translateX(0.06em);
+}
+
+.ml-root .ml-nextdoor-tile .ml-tile-line {
+  padding-right: 80px;
+}
+
+/* Essay body ------------------------------------------------------------------- */
+
+.ml-root .ml-essay-body {
+  display: grid;
+  gap: 32px;
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(48px, 6vw, 88px);
+}
+
+@media (min-width: 1100px) {
+  .ml-root .ml-essay-body {
+    grid-template-columns: 220px minmax(0, 680px) minmax(120px, 1fr);
+    column-gap: clamp(32px, 4vw, 64px);
+    align-items: start;
+  }
+  .ml-root .ml-essay-aside {
+    position: sticky;
+    top: calc(var(--ml-nav-h, 64px) + 36px);
+    max-height: calc(100vh - var(--ml-nav-h, 64px) - 72px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+  .ml-root .ml-essay[data-room="ring"] .ml-essay-aside,
+  .ml-root .ml-essay[data-room="screen"] .ml-essay-aside {
+    top: calc(var(--ml-nav-h, 64px) + 96px);
+  }
+}
+
+@media (max-width: 1099px) {
+  .ml-root .ml-essay-body {
+    max-width: 728px;
+  }
+}
+
+/* TOC --------------------------------------------------------------------------- */
+
+.ml-root .ml-toc {
+  font-family: var(--ml-sans);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.ml-root .ml-toc-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--t-muted);
+  margin-bottom: 12px;
+}
+
+.ml-root .ml-toc-empty {
+  color: var(--t-muted);
+}
+
+.ml-root .ml-toc-list {
+  position: relative;
+  display: grid;
+  gap: 2px;
+}
+
+.ml-root .ml-toc-list a {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.2em minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 6px 8px 6px 10px;
+  text-decoration: none;
+  color: var(--t-muted);
+  transition: color 0.25s ease, transform 0.3s var(--ml-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-toc-list a:hover {
+    color: var(--t-ink);
+    transform: translateX(3px);
+  }
+}
+
+.ml-root .ml-toc-list li[data-state="done"] a {
+  color: color-mix(in srgb, var(--t-ink) 70%, var(--t-muted));
+}
+
+.ml-root .ml-toc-list a[aria-current] {
+  color: var(--t-ink);
+  font-weight: 700;
+}
+
+/* The marker that rides along the active section. */
+.ml-root .ml-toc-list a::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 3px;
+  background: var(--t-accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.35s var(--ml-ease-out);
+}
+
+.ml-root .ml-toc-list a[aria-current]::before {
+  transform: scaleY(1);
+}
+
+.ml-root .ml-toc-n {
+  font-variant-numeric: tabular-nums;
+}
+
+.ml-root .ml-toc-min {
+  font-family: var(--ml-mono);
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+@media (max-width: 1099px) {
+  .ml-root .ml-toc {
+    border-top: 2px solid var(--t-ink);
+    border-bottom: 1px solid var(--t-line);
+    padding-block: 14px;
+  }
+  .ml-root .ml-toc-list a {
+    padding-block: 4px;
+  }
+}
+
+/* Sticky meters (Ring and Screen) ---------------------------------------------- */
+
+.ml-root .ml-meter {
+  position: sticky;
+  z-index: 30;
+  top: var(--ml-nav-h, 64px);
+  pointer-events: none;
+}
+
+.ml-root .ml-meter-inner {
+  max-width: 1280px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px clamp(20px, 4vw, 48px);
+}
+
+/* Prose -------------------------------------------------------------------------- */
+
+.ml-root .ml-prose {
+  min-width: 0;
+  font-family: var(--t-body);
+  font-size: clamp(17px, 1.25vw, 19px);
+  line-height: 1.7;
+  color: var(--t-ink);
+}
+
+.ml-root .ml-prose > * + * {
+  margin-top: 1.15em;
+}
+
+.ml-root .ml-prose p,
+.ml-root .ml-prose li {
+  text-wrap: pretty;
+}
+
+.ml-root .ml-prose :is(p, li, td, th, blockquote) a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--t-accent) 70%, transparent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.ml-root .ml-prose :is(p, li, td, th, blockquote) a:hover {
+  text-decoration-color: var(--t-accent);
+  color: var(--t-accent);
+}
+
+.ml-root .ml-prose strong {
+  font-weight: 700;
+}
+
+.ml-root .ml-prose ul,
+.ml-root .ml-prose ol {
+  padding-left: 1.3em;
+}
+
+.ml-root .ml-prose ul { list-style: disc; }
+.ml-root .ml-prose ol { list-style: decimal; }
+
+.ml-root .ml-prose li + li {
+  margin-top: 0.4em;
+}
+
+.ml-root .ml-prose li::marker {
+  color: var(--t-accent);
+}
+
+.ml-root .ml-prose blockquote {
+  border-left: 4px solid var(--t-accent);
+  padding-left: 1.1em;
+  font-style: italic;
+  color: var(--t-ink);
+}
+
+.ml-root .ml-prose hr {
+  border: 0;
+  height: 2px;
+  width: 64px;
+  background: var(--t-accent);
+  margin-block: 2.4em;
+}
+
+.ml-root .ml-prose h2,
+.ml-root .ml-prose h3,
+.ml-root .ml-prose h4 {
+  font-family: var(--ml-sans);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-top: 2em;
+  text-wrap: balance;
+}
+
+.ml-root .ml-prose h2 { font-size: 1.5em; }
+.ml-root .ml-prose h3 { font-size: 1.22em; }
+.ml-root .ml-prose h4 { font-size: 1.05em; }
+
+.ml-root .ml-prose h2 a,
+.ml-root .ml-prose h3 a,
+.ml-root .ml-prose h4 a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.ml-root .ml-prose img {
+  max-width: 100%;
+  height: auto;
+}
+
+.ml-root .ml-prose table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-family: var(--ml-sans);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.ml-root .ml-prose th,
+.ml-root .ml-prose td {
+  border-bottom: 1px solid var(--t-line);
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.ml-root .ml-prose th {
+  border-bottom: 2px solid var(--t-ink);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Code: same rehype-pretty-code output as the blog, recolored per room. */
+.ml-root .ml-prose pre {
+  border-radius: 0;
+  border: 1px solid var(--t-line);
+  background: var(--t-surface);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ml-root .ml-prose code {
+  font-family: var(--ml-mono);
+}
+
+.ml-root .ml-prose code[data-theme],
+.ml-root .ml-prose code[data-theme] span {
+  color: var(--shiki-light);
+}
+
+.ml-root[data-theme="screen"] .ml-prose code[data-theme],
+.ml-root[data-theme="screen"] .ml-prose code[data-theme] span {
+  color: var(--shiki-dark);
+}
+
+.ml-root .ml-prose .inline-code {
+  font-family: var(--ml-mono);
+  background: var(--t-surface);
+  color: var(--t-ink);
+  border-radius: 2px;
+}
+
+.ml-root .ml-prose [data-rehype-pretty-code-title] {
+  font-family: var(--ml-mono);
+  color: var(--t-muted);
+  background: var(--t-surface);
+  border-color: var(--t-line);
+  border-radius: 0;
+}
+
+/* Section headings -------------------------------------------------------- */
+
+.ml-root .ml-prose .ml-sec {
+  position: relative;
+  display: grid;
+  gap: 6px;
+  margin-top: 2.6em;
+  scroll-margin-top: calc(var(--ml-nav-h, 64px) + 80px);
+}
+
+.ml-root .ml-sec-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  font-family: var(--ml-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--t-accent);
+}
+
+.ml-root .ml-sec-text {
+  display: block;
+}
+
+.ml-root .ml-sec-margin {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .ml-root .ml-sec-margin {
+    display: block;
+    position: absolute;
+    left: calc(100% + clamp(32px, 4vw, 64px));
+    top: 0.3em;
+    width: 150px;
+  }
+}
+
+/* Endings and "more" ------------------------------------------------------- */
+
+.ml-root .ml-end {
+  padding-bottom: clamp(16px, 3vw, 40px);
+}
+
+.ml-root .ml-more {
+  display: grid;
+  gap: 40px;
+  padding-top: clamp(48px, 6vw, 80px);
+  padding-bottom: clamp(56px, 8vw, 112px);
+  font-family: var(--ml-sans);
+}
+
+.ml-root .ml-more-title {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.ml-root .ml-more-list {
+  --frame-ink: var(--t-ink);
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .ml-root .ml-more-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.ml-root .ml-more-link {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 8px;
+  height: 100%;
+  padding: 18px;
+  border: 2px solid var(--frame-ink);
+  text-decoration: none;
+  overflow: hidden;
+  transition: color 0.3s ease, transform 0.35s var(--ml-ease-snap);
+}
+
+.ml-root .ml-more-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--t-field);
+  clip-path: circle(0% at 100% 100%);
+  transition: clip-path 0.6s var(--ml-ease-out);
+}
+
+/* Hover keys on the list item: the link lifts and clips its own overflow, so
+   its own :hover would flicker at the bottom edge. The item never moves. */
+.ml-root :hover > .ml-more-link,
+.ml-root .ml-more-link:focus-visible {
+  color: var(--t-field-ink);
+}
+
+.ml-root .ml-more-link:focus-visible {
+  transform: translateY(-3px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root :hover > .ml-more-link {
+    transform: translateY(-3px);
+  }
+}
+
+.ml-root [data-room="screen"]:hover > .ml-more-link,
+.ml-root [data-room="screen"] > .ml-more-link:focus-visible {
+  color: #f3e9d8;
+}
+
+.ml-root :hover > .ml-more-link::before,
+.ml-root .ml-more-link:focus-visible::before {
+  clip-path: circle(150% at 100% 100%);
+}
+
+.ml-root .ml-more-room {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.ml-root .ml-more-name {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ml-root .ml-more-meta {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.ml-root .ml-more-pager {
+  display: grid;
+  gap: 12px;
+  border-top: 2px solid var(--t-ink);
+  padding-top: 18px;
+}
+
+@media (min-width: 768px) {
+  .ml-root .ml-more-pager {
+    grid-template-columns: 1fr 1fr;
+  }
+  .ml-root .ml-more-page[data-dir="newer"] {
+    text-align: right;
+  }
+}
+
+.ml-root .ml-more-page {
+  display: grid;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.ml-root .ml-more-page-label {
+  font-size: 13px;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-more-page-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+  transition: transform 0.35s var(--ml-ease-out);
+}
+
+.ml-root .ml-more-page[data-dir="older"]:hover .ml-more-page-title {
+  transform: translateX(-4px);
+}
+
+.ml-root .ml-more-page[data-dir="newer"]:hover .ml-more-page-title {
+  transform: translateX(4px);
+}
+
+/* Section headings animate in with the room grammar (scroll-driven). */
+@supports (animation-timeline: view()) {
+  .ml-root .ml-prose .ml-sec .ml-sec-tag {
+    animation: ml-reveal-default linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 90%;
+  }
+}

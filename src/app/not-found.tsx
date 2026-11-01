@@ -1,36 +1,41 @@
 import Link from "next/link";
+import { roomHref, ROOM_IDS, ROOMS } from "@/components/house/rooms";
 
 /**
- * Global 404 in the publication voice: the bell that never rang, with a path
- * back into the record.
+ * Global 404, in the house voice: a door that is not on the plan, with the
+ * real rooms listed as the way back.
  */
 export default function NotFound() {
   return (
-    <main className="flex flex-col items-center py-24 text-center">
-      <p aria-hidden="true" className="font-serif text-8xl font-bold leading-none text-foreground/[0.12]">
-        404
-      </p>
-      <h1 className="mt-6 font-serif text-3xl font-bold tracking-tight sm:text-4xl">
-        This round doesn&apos;t exist.
-      </h1>
-      <p className="mt-4 max-w-md leading-relaxed text-muted-foreground">
-        The bell never rang for this one. It may have been cut, renamed, or
-        never scheduled in the first place.
-      </p>
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <Link
-          href="/blog"
-          className="border border-accent px-5 py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-accent hover:bg-accent/10"
-        >
-          The fight record
-        </Link>
-        <Link
-          href="/"
-          className="px-5 py-2.5 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground hover:text-accent"
-        >
-          Front door →
-        </Link>
-      </div>
+    <main className="ml-page ml-lost">
+      <header className="ml-wrap ml-page-head">
+        <p className="ml-eyebrow">404</p>
+        <h1 className="ml-page-title">There is no room here.</h1>
+        <p className="ml-page-lede">
+          This door is not on the plan. It may have been moved, renamed, or never built.
+        </p>
+      </header>
+      <nav aria-label="Ways back" className="ml-wrap ml-page-body">
+        <ul className="ml-lost-rooms">
+          {ROOM_IDS.map((id) => (
+            <li key={id} data-room={id}>
+              <Link href={roomHref(id)} className="ml-lost-room">
+                <span aria-hidden="true" className="ml-swatch" />
+                {ROOMS[id].name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        <p className="ml-page-meta">
+          <Link href="/" className="ml-u">
+            Front door
+          </Link>
+          {" · "}
+          <Link href="/blog" className="ml-u">
+            The archive
+          </Link>
+        </p>
+      </nav>
     </main>
   );
 }

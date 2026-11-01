@@ -140,13 +140,11 @@ export function Search() {
         <button
           type="button"
           aria-label="Search the publication"
-          className="flex h-9 items-center gap-2 rounded-md border border-border px-3 text-sm text-muted-foreground transition-colors duration-150 hover:border-foreground/40 hover:text-foreground"
+          className="ml-nav-search"
         >
           <SearchIcon size={15} aria-hidden="true" />
-          <span className="hidden sm:inline">Search</span>
-          <kbd className="hidden rounded-sm bg-foreground/10 px-1.5 py-0.5 font-mono text-[0.625rem] sm:inline">
-            ⌘K
-          </kbd>
+          <span className="ml-nav-search-label">Search</span>
+          <kbd className="ml-nav-search-kbd">⌘K</kbd>
         </button>
       </DialogTrigger>
 

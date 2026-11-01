@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getPostsByTopic, getAllTopics } from "@/lib/posts";
+import { postHref, primaryRoom, ROOMS } from "@/components/house/rooms";
 import { TOPIC_INTROS, normalizeTopic } from "@/lib/topics";
 import { absoluteUrl, RSS_ALTERNATE, SITE_NAME } from "@/lib/site";
 
@@ -47,58 +48,41 @@ export default async function TagPage({ params }: Params) {
   }
 
   return (
-    <main>
-      <header className="border-b border-border pb-10">
-        <p className="font-mono text-[0.6875rem] uppercase tracking-[0.22em] text-muted-foreground">
-          Topic collection
-        </p>
-        <h1 className="mt-3 font-serif text-5xl font-bold leading-none tracking-[-0.01em] sm:text-6xl lg:text-7xl">
-          #{topic}
-        </h1>
-        <p className="mt-5 max-w-[52ch] leading-relaxed text-muted-foreground">
-          {TOPIC_INTROS[topic]}
-        </p>
-        <p className="mt-4 font-mono text-xs uppercase tracking-[0.16em] text-muted-foreground">
-          {posts.length} {posts.length === 1 ? "round" : "rounds"} ·{" "}
-          <Link href="/blog" className="text-accent hover:underline">
-            ← Back to the record
+    <main className="ml-page">
+      <header className="ml-wrap ml-page-head">
+        <p className="ml-eyebrow">Topic collection</p>
+        <h1 className="ml-page-title">#{topic}</h1>
+        <p className="ml-page-lede">{TOPIC_INTROS[topic]}</p>
+        <p className="ml-page-meta">
+          {posts.length} {posts.length === 1 ? "piece" : "pieces"} ·{" "}
+          <Link href="/blog" className="ml-u">
+            Back to the archive
           </Link>
         </p>
       </header>
 
-      <ul className="divide-y divide-border">
-        {posts.map((post, index) => (
-          <li key={post.slug}>
-            <Link
-              href={`/blog/${post.slug}`}
-              className="group grid grid-cols-[3.25rem_minmax(0,1fr)] gap-4 py-7 sm:grid-cols-[4.5rem_minmax(0,1fr)] lg:grid-cols-[7rem_minmax(0,1fr)] lg:gap-8"
-            >
-              <span
-                aria-hidden="true"
-                className="pt-1 font-serif text-4xl font-bold leading-none text-foreground/[0.08] sm:text-5xl lg:text-7xl"
-              >
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="min-w-0">
-                <span className="block font-mono text-[0.6875rem] uppercase tracking-[0.16em] text-muted-foreground">
-                  {post.lane} / {post.format} ·{" "}
-                  <time dateTime={post.dateISO} className="whitespace-nowrap">
-                    {post.displayDate}
-                  </time>
-                  {" · "}
-                  {post.readingTime} min
-                </span>
-                <span className="mt-2 block font-serif text-2xl font-bold leading-[1.08] [text-wrap:balance] group-hover:text-accent sm:text-3xl">
-                  {post.title}
-                </span>
-                <span className="mt-2.5 block max-w-[68ch] leading-relaxed text-muted-foreground">
-                  {post.description}
-                </span>
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <section aria-label={`Pieces tagged ${topic}`} className="ml-wrap ml-page-body">
+        <ol className="ml-archive-list">
+          {posts.map((post) => {
+            const room = primaryRoom(post);
+            return (
+              <li key={post.slug} data-room={room} className="ml-archive-row">
+                <Link href={postHref(post.slug)} className="ml-archive-link">
+                  <span className="ml-archive-room">
+                    <span aria-hidden="true" className="ml-swatch" />
+                    {ROOMS[room].name}
+                  </span>
+                  <span className="ml-archive-title">{post.title}</span>
+                  <span className="ml-archive-meta">
+                    <time dateTime={post.dateISO}>{post.displayDate}</time>
+                    <span>{post.readingTime} min</span>
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
     </main>
   );
 }

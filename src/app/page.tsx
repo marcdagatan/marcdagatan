@@ -1,17 +1,5 @@
 import type { Metadata } from "next";
-import { getAllPostsMeta } from "@/lib/posts";
-import {
-  selectCurrentBout,
-  selectRecentRounds,
-  selectStartHerePosts,
-} from "@/lib/homepage";
-import { countPostsByLane } from "@/lib/archive";
-import { OpeningBell } from "@/components/homepage/opening-bell";
-import { CurrentBout } from "@/components/homepage/current-bout";
-import { LaneRows } from "@/components/homepage/lane-rows";
-import { StartHere } from "@/components/homepage/start-here";
-import { RecentRounds } from "@/components/homepage/recent-rounds";
-import { StayForNextRound } from "@/components/homepage/stay-for-next-round";
+import { JsonLd } from "@/components/json-ld";
 import {
   absoluteUrl,
   AUTHOR_NAME,
@@ -20,7 +8,12 @@ import {
   SITE_DESCRIPTION,
   SITE_NAME,
 } from "@/lib/site";
-import { JsonLd } from "@/components/json-ld";
+import { HOME, NOW_ITEMS, NOW_UPDATED, ROOM_COPY } from "@/components/house/content";
+import { getAllPostsWithStats, toArchiveEntry } from "@/components/house/data";
+import { Archive } from "@/components/house/home/archive";
+import { FloorPlan, type PlanRoom } from "@/components/house/home/floor-plan";
+import { HomeHeadline } from "@/components/house/home/headline";
+import { featuredInRoom, postsInRoom, ROOM_IDS } from "@/components/house/rooms";
 
 export const metadata: Metadata = {
   title: PUBLICATION_NAME,
@@ -48,18 +41,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  const posts = getAllPostsMeta();
-  const currentBout = selectCurrentBout(posts);
-  const startHere = selectStartHerePosts(
-    posts,
-    currentBout ? [currentBout.slug] : []
-  );
-  const featuredSlugs = [
-    ...(currentBout ? [currentBout.slug] : []),
-    ...startHere.map((post) => post.slug),
-  ];
-  const recentRounds = selectRecentRounds(posts, featuredSlugs, 4);
-  const laneCounts = countPostsByLane(posts);
+  const posts = getAllPostsWithStats();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -73,17 +55,63 @@ export default function Home() {
     },
   };
 
+  const planRooms: PlanRoom[] = ROOM_IDS.map((room) => {
+    const listed = postsInRoom(posts, room);
+    const featured = featuredInRoom(posts, room);
+    return {
+      room,
+      line: ROOM_COPY[room].line,
+      count: listed.length,
+      minutes: listed.reduce((sum, post) => sum + post.readingTime, 0),
+      featured: featured ? { slug: featured.slug, title: featured.title } : undefined,
+    };
+  });
+
+  const entries = posts.map(toArchiveEntry);
+
   return (
-    <main>
+    <main className="ml-home">
       <JsonLd data={jsonLd} />
-      <OpeningBell />
-      {currentBout ? <CurrentBout post={currentBout} /> : null}
-      {/* Start Here precedes taxonomy at every breakpoint so visual, keyboard,
-          and screen-reader order stay aligned. */}
-      <StartHere posts={startHere} />
-      <LaneRows counts={laneCounts} />
-      <RecentRounds posts={recentRounds} />
-      <StayForNextRound />
+      <section className="ml-wrap ml-home-open">
+        <HomeHeadline />
+        <div className="ml-home-intro">
+          <p className="ml-home-lede">{HOME.intro}</p>
+          <p className="ml-home-note">{HOME.planNote}</p>
+        </div>
+      </section>
+
+      <section aria-label="The house" className="ml-wrap ml-home-plan">
+        <FloorPlan
+          rooms={planRooms}
+          totalPieces={posts.length}
+          totalMinutes={posts.reduce((sum, post) => sum + post.readingTime, 0)}
+        />
+      </section>
+
+      <section className="ml-wrap ml-home-lower">
+        <aside className="ml-now ml-reveal" aria-labelledby="ml-now-title">
+          <div className="ml-now-head">
+            <h2 id="ml-now-title" className="ml-now-title">Now</h2>
+            <p className="ml-now-stamp">Edited by hand, {NOW_UPDATED}</p>
+          </div>
+          <dl className="ml-now-list">
+            {NOW_ITEMS.map((item) => (
+              <div key={item.label} data-room={item.room} className="ml-now-item">
+                <dt>
+                  <span aria-hidden="true" className="ml-swatch" />
+                  {item.label}
+                </dt>
+                <dd>{item.text}</dd>
+              </div>
+            ))}
+          </dl>
+        </aside>
+
+        <div className="ml-home-archive">
+          <h2 className="ml-section-title ml-reveal">Every piece, every room</h2>
+          <Archive entries={entries} />
+        </div>
+      </section>
     </main>
   );
 }

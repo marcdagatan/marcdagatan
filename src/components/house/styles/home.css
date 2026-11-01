@@ -1,0 +1,956 @@
+/* ---------------------------------------------------------------------------
+   Home: the headline, the floor plan, Now, and the archive.
+   Shared tile/motif/door styles also live here; room pages reuse them.
+--------------------------------------------------------------------------- */
+
+.ml-root .ml-home-open {
+  padding-top: clamp(48px, 8vw, 104px);
+  padding-bottom: clamp(36px, 5vw, 64px);
+}
+
+/* Headline: four faces, four entrances ------------------------------------ */
+
+.ml-root .ml-hero-head {
+  max-width: 14ch;
+  font-family: var(--ml-sans);
+  font-size: clamp(3rem, 9.2vw, 8.6rem);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.ml-root .ml-hero-word {
+  display: inline;
+}
+
+/* Static on purpose: each word only takes its room's face. No hover, no
+   entrance, no loop. Motion here strobed between the stacked lines. */
+.ml-root .ml-hero-word-ink {
+  font-family: var(--t-display);
+  font-style: var(--t-display-style);
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-display-track);
+  text-transform: var(--t-display-case);
+}
+
+.ml-root .ml-hero-word[data-room="life"] .ml-hero-word-ink {
+  font-variation-settings: "SOFT" 100, "opsz" 144;
+}
+
+/* Shared room entrances, used by the room and essay heroes. */
+@keyframes ml-type {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+@keyframes ml-slam {
+  0% { opacity: 0; transform: scale(1.5) rotate(-3deg); }
+  60% { opacity: 1; transform: scale(0.94); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes ml-flicker {
+  /* A projector warming up: one slow, shallow dip, never a strobe. */
+  0% { opacity: 0; }
+  45% { opacity: 0.85; }
+  65% { opacity: 0.65; }
+  100% { opacity: 1; }
+}
+@keyframes ml-drift {
+  from { opacity: 0; transform: translateY(0.35em) rotate(-5deg); }
+  to { opacity: 1; transform: none; }
+}
+
+.ml-root .ml-home-intro {
+  margin-top: clamp(28px, 4vw, 44px);
+  display: grid;
+  gap: 18px;
+  animation: ml-drift-in 1s var(--ml-ease-out) 1.9s both;
+}
+
+@media (min-width: 1000px) {
+  .ml-root .ml-home-intro {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    column-gap: 8%;
+    align-items: end;
+  }
+}
+
+.ml-root .ml-home-lede {
+  max-width: 54ch;
+  font-family: var(--ml-sans);
+  font-size: clamp(18px, 1.6vw, 21px);
+  line-height: 1.55;
+}
+
+.ml-root .ml-home-note {
+  font-family: var(--ml-sans);
+  font-size: 14px;
+  color: var(--t-muted);
+}
+
+/* Floor plan ----------------------------------------------------------------- */
+
+.ml-root .ml-home-plan {
+  padding-bottom: clamp(56px, 8vw, 112px);
+}
+
+.ml-root .ml-plan-frame {
+  position: relative;
+  font-family: var(--ml-sans);
+}
+
+@media (min-width: 900px) {
+  .ml-root .ml-plan-frame {
+    padding: 40px 0 0 40px;
+  }
+}
+
+.ml-root .ml-plan-dim {
+  display: none;
+  position: absolute;
+  color: var(--t-muted);
+  font-family: var(--ml-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+@media (min-width: 900px) {
+  .ml-root .ml-plan-dim { display: block; }
+}
+
+.ml-root .ml-plan-dim-x {
+  top: 6px;
+  left: 40px;
+  right: 0;
+  height: 18px;
+}
+
+.ml-root .ml-plan-dim-y {
+  top: 40px;
+  bottom: 0;
+  left: 6px;
+  width: 18px;
+}
+
+.ml-root .ml-plan-dim-line {
+  position: absolute;
+  background: currentColor;
+}
+
+.ml-root .ml-plan-dim-x .ml-plan-dim-line {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  transform-origin: left;
+  animation: ml-draw-x 1.2s var(--ml-ease-out) 0.4s both;
+}
+
+.ml-root .ml-plan-dim-y .ml-plan-dim-line {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  transform-origin: top;
+  animation: ml-draw-y 1.2s var(--ml-ease-out) 0.6s both;
+}
+
+/* End ticks. */
+.ml-root .ml-plan-dim-x::before,
+.ml-root .ml-plan-dim-x::after,
+.ml-root .ml-plan-dim-y::before,
+.ml-root .ml-plan-dim-y::after {
+  content: "";
+  position: absolute;
+  background: currentColor;
+}
+.ml-root .ml-plan-dim-x::before,
+.ml-root .ml-plan-dim-x::after {
+  top: 2px;
+  width: 1px;
+  height: 14px;
+  transform: rotate(45deg);
+}
+.ml-root .ml-plan-dim-x::before { left: 0; }
+.ml-root .ml-plan-dim-x::after { right: 0; }
+.ml-root .ml-plan-dim-y::before,
+.ml-root .ml-plan-dim-y::after {
+  left: 2px;
+  width: 14px;
+  height: 1px;
+  transform: rotate(45deg);
+}
+.ml-root .ml-plan-dim-y::before { top: 0; }
+.ml-root .ml-plan-dim-y::after { bottom: 0; }
+
+.ml-root .ml-plan-dim-label {
+  position: absolute;
+  background: var(--t-bg);
+  padding-inline: 10px;
+  white-space: nowrap;
+  animation: ml-fade-in 0.6s ease 1.2s both;
+}
+
+.ml-root .ml-plan-dim-x .ml-plan-dim-label {
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+.ml-root .ml-plan-dim-y .ml-plan-dim-label {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-90deg);
+}
+
+@keyframes ml-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ml-root .ml-plan-compass {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  color: var(--t-muted);
+  animation: ml-compass 1.6s var(--ml-ease-snap) 0.8s both;
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .ml-root .ml-plan-compass { display: block; top: -40px; }
+}
+
+@keyframes ml-compass {
+  from { transform: rotate(-200deg); opacity: 0; }
+  to { transform: rotate(0); opacity: 1; }
+}
+
+.ml-root .ml-plan {
+  display: grid;
+  gap: var(--ml-wall);
+  padding: var(--ml-wall);
+  background: var(--t-ink);
+  grid-template-columns: 1fr;
+  grid-template-areas: "engineering" "ring" "hall" "screen" "life";
+  transition: background-color 0.6s ease;
+}
+
+@media (min-width: 900px) {
+  .ml-root .ml-plan {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-rows: minmax(330px, auto) 104px minmax(380px, auto);
+    grid-template-areas:
+      "engineering engineering engineering engineering engineering engineering engineering ring ring ring ring ring"
+      "engineering engineering engineering engineering engineering engineering engineering hall hall hall hall hall"
+      "screen screen screen screen screen life life life life life life life";
+  }
+}
+
+.ml-root .ml-plan > [data-room="engineering"] { grid-area: engineering; }
+.ml-root .ml-plan > [data-room="ring"] { grid-area: ring; }
+.ml-root .ml-plan > [data-room="screen"] { grid-area: screen; }
+.ml-root .ml-plan > [data-room="life"] { grid-area: life; }
+.ml-root .ml-plan > .ml-hall { grid-area: hall; }
+
+/* Tile: unlit plaster tinted with the room, lights spread from the door. */
+.ml-root .ml-tile {
+  --tile-bg: color-mix(in srgb, var(--t-field) 20%, #edeeea);
+  --tile-ink: #16181c;
+  --tile-name: var(--t-field);
+  --tile-motif: color-mix(in srgb, var(--t-field) 55%, #16181c);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 340px;
+  padding: clamp(22px, 2.6vw, 34px);
+  background: var(--tile-bg);
+  color: var(--tile-ink);
+  container-type: inline-size;
+  font-family: var(--ml-sans);
+  transition: color 0.45s ease 0.08s;
+}
+
+.ml-root .ml-tile[data-room="ring"] { --tile-name: #15130f; --tile-bg: color-mix(in srgb, #f2c230 34%, #edeeea); }
+.ml-root .ml-tile[data-room="screen"] { --tile-name: #0e1422; --tile-bg: color-mix(in srgb, #0e1422 14%, #edeeea); }
+.ml-root .ml-tile[data-room="life"] { --tile-name: #8a3a5d; --tile-bg: color-mix(in srgb, #c7d6bd 55%, #edeeea); }
+
+.ml-root .ml-tile::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--t-field);
+  clip-path: circle(0% at 100% 100%);
+  transition: clip-path 0.75s var(--ml-ease-out);
+}
+
+.ml-root .ml-tile:hover,
+.ml-root .ml-tile:focus-within {
+  --tile-ink: var(--t-field-ink);
+  --tile-name: var(--t-field-ink);
+  --tile-motif: var(--t-field-ink);
+}
+
+.ml-root .ml-tile[data-room="screen"]:hover,
+.ml-root .ml-tile[data-room="screen"]:focus-within {
+  --tile-name: #f3e9d8;
+}
+
+.ml-root .ml-tile:hover::before,
+.ml-root .ml-tile:focus-within::before {
+  clip-path: circle(150% at 100% 100%);
+}
+
+/* Hover intent: a pointer that only passes over a tile never lights it, and
+   a brief slip into the wall does not switch it off. Keyboard focus stays
+   immediate. */
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-tile,
+  .ml-root .ml-tile::before,
+  .ml-root .ml-tile *:not(.ml-u),
+  .ml-root .ml-tile *::before {
+    transition-delay: 0.1s;
+  }
+  .ml-root .ml-tile:hover,
+  .ml-root .ml-tile:hover::before,
+  .ml-root .ml-tile:hover *:not(.ml-u),
+  .ml-root .ml-tile:hover *::before {
+    transition-delay: 0.16s;
+  }
+  .ml-root .ml-tile:focus-within,
+  .ml-root .ml-tile:focus-within::before,
+  .ml-root .ml-tile:focus-within *:not(.ml-u),
+  .ml-root .ml-tile:focus-within *::before {
+    transition-delay: 0s;
+  }
+}
+
+/* No hover on touch screens: rooms are always lit. */
+@media (hover: none) {
+  .ml-root .ml-tile {
+    --tile-ink: var(--t-field-ink);
+    --tile-name: var(--t-field-ink);
+    --tile-motif: var(--t-field-ink);
+  }
+  .ml-root .ml-tile[data-room="screen"] { --tile-name: #f3e9d8; }
+  .ml-root .ml-tile::before {
+    clip-path: none;
+  }
+}
+
+.ml-root .ml-tile-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.ml-root .ml-tile-tag {
+  font-weight: 700;
+}
+
+.ml-root .ml-tile-count {
+  opacity: 0.8;
+  text-align: right;
+}
+
+.ml-root .ml-tile-name {
+  margin-top: 18px;
+  color: var(--tile-name);
+  transition:
+    color 0.45s ease 0.05s,
+    transform 0.6s var(--ml-ease-out);
+  transform-origin: left bottom;
+}
+
+/* Large display type never moves on hover; the room's lights carry it. */
+
+.ml-root [data-room="engineering"] .ml-tile-name { font-size: 12.6cqi; }
+.ml-root [data-room="ring"] .ml-tile-name { font-size: 29cqi; }
+.ml-root [data-room="screen"] .ml-tile-name { font-size: 25cqi; }
+.ml-root [data-room="life"] .ml-tile-name { font-size: 23cqi; }
+
+.ml-root .ml-tile-link {
+  text-decoration: none;
+}
+
+.ml-root .ml-tile-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.ml-root .ml-tile-link:focus-visible {
+  outline: none;
+}
+
+.ml-root .ml-tile:has(.ml-tile-link:focus-visible) {
+  outline: 3px solid var(--t-field-ink);
+  outline-offset: -10px;
+}
+
+.ml-root .ml-tile-line {
+  margin-top: 10px;
+  max-width: 34ch;
+  font-size: 15px;
+  line-height: 1.4;
+  opacity: 0.88;
+}
+
+.ml-root .ml-tile-feature {
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding-top: 36px;
+  padding-right: 96px;
+  max-width: 34ch;
+}
+
+.ml-root .ml-tile-feature-label {
+  display: block;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+.ml-root .ml-tile-post {
+  display: inline;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+/* Ring ropes run behind the room's headline wherever it appears. */
+.ml-root [data-room="ring"] .ml-tile-name,
+.ml-root [data-room="ring"] .ml-rope-head {
+  position: relative;
+}
+
+.ml-root [data-room="ring"] .ml-tile-name::before,
+.ml-root [data-room="ring"] .ml-rope-head::before {
+  content: "";
+  position: absolute;
+  left: -100vw;
+  right: -100vw;
+  top: 18%;
+  bottom: 22%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--rope, #fffaf0) 0 0) top / 100% 5px no-repeat,
+    linear-gradient(var(--rope, #fffaf0) 0 0) center / 100% 5px no-repeat,
+    linear-gradient(var(--rope, #fffaf0) 0 0) bottom / 100% 5px no-repeat;
+  transition: transform 0.7s var(--ml-ease-snap);
+}
+
+.ml-root .ml-tile[data-room="ring"] .ml-tile-name::before {
+  --rope: color-mix(in srgb, #15130f 35%, transparent);
+}
+
+.ml-root .ml-tile[data-room="ring"]:hover .ml-tile-name::before,
+.ml-root .ml-tile[data-room="ring"]:focus-within .ml-tile-name::before {
+  --rope: #fffaf0;
+}
+
+@media (hover: none) {
+  .ml-root .ml-tile[data-room="ring"] .ml-tile-name::before { --rope: #fffaf0; }
+}
+
+
+/* Door ---------------------------------------------------------------------- */
+
+.ml-root .ml-tile-door {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 84px;
+  height: 84px;
+  transform: scaleX(-1);
+  color: var(--tile-ink);
+}
+
+.ml-root .ml-door-leaf {
+  transform-box: view-box;
+  transform-origin: 0 100%;
+  transform: rotate(-28deg);
+  transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1.2);
+}
+
+.ml-root .ml-door-arc {
+  stroke-opacity: 0.45;
+  stroke-dasharray: 160;
+  stroke-dashoffset: 108;
+  transition:
+    stroke-dashoffset 0.7s var(--ml-ease-out),
+    stroke-opacity 0.6s ease;
+}
+
+.ml-root .ml-door[data-open="true"] .ml-door-leaf,
+.ml-root .ml-tile:hover .ml-door-leaf,
+.ml-root .ml-tile:focus-within .ml-door-leaf,
+.ml-root .ml-door-host:hover .ml-door-leaf,
+.ml-root .ml-door-host:focus-visible .ml-door-leaf {
+  transform: rotate(-90deg);
+}
+
+.ml-root .ml-door[data-open="true"] .ml-door-arc,
+.ml-root .ml-tile:hover .ml-door-arc,
+.ml-root .ml-tile:focus-within .ml-door-arc,
+.ml-root .ml-door-host:hover .ml-door-arc,
+.ml-root .ml-door-host:focus-visible .ml-door-arc {
+  stroke-dashoffset: 0;
+  stroke-opacity: 1;
+}
+
+/* Motifs ------------------------------------------------------------------- */
+
+.ml-root .ml-motif {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  color: var(--tile-motif, currentColor);
+  transition: color 0.45s ease;
+}
+
+.ml-root .ml-motif-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, currentColor 22%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, currentColor 22%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
+  transition:
+    background-position 1s var(--ml-ease-out),
+    color 0.45s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-tile:hover .ml-motif-grid {
+    background-position: 23px 23px;
+  }
+}
+
+.ml-root .ml-motif-diagram {
+  position: absolute;
+  right: 7%;
+  bottom: 18%;
+  width: 42%;
+  max-width: 340px;
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .ml-root .ml-motif-diagram { display: block; }
+}
+
+.ml-root .ml-trace {
+  stroke-dasharray: 5 5;
+}
+
+.ml-root .ml-tile:hover .ml-trace,
+.ml-root .ml-trace-live .ml-trace {
+  animation: ml-flow 0.9s linear infinite;
+}
+
+@keyframes ml-flow {
+  to { stroke-dashoffset: -20; }
+}
+
+.ml-root .ml-motif-post {
+  position: absolute;
+  right: 7%;
+  top: 24%;
+  width: 14px;
+  height: 56%;
+  background: currentColor;
+  opacity: 0.8;
+  display: none;
+}
+
+.ml-root .ml-motif-twelve {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 60%;
+  max-height: 420px;
+  width: auto;
+  opacity: 0.14;
+  display: none;
+  transition: transform 0.7s var(--ml-ease-snap);
+}
+
+@media (min-width: 640px) {
+  .ml-root .ml-motif-post,
+  .ml-root .ml-motif-twelve { display: block; }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-tile:hover .ml-motif-twelve {
+    transform: translateX(-4%) scale(1.06);
+  }
+}
+
+.ml-root .ml-beam {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  transition: opacity 0.6s ease;
+}
+
+.ml-root .ml-tile:hover .ml-beam,
+.ml-root .ml-beam-on .ml-beam {
+  opacity: 1;
+  animation: ml-beam-flicker 4.8s ease-in-out infinite;
+}
+
+@media (hover: none) {
+  .ml-root .ml-tile .ml-beam { opacity: 1; }
+}
+
+@keyframes ml-beam-flicker {
+  /* A slow lamp breath; the old 60ms dips read as flicker. */
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.86; }
+}
+
+.ml-root .ml-filmstrip {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 22px;
+  background:
+    repeating-linear-gradient(to right, transparent 0 6px, color-mix(in srgb, currentColor 32%, transparent) 6px 16px, transparent 16px 22px) 0 6px / 100% 10px no-repeat,
+    rgb(0 0 0 / 0.35);
+}
+
+.ml-root .ml-filmstrip-top { top: 0; }
+.ml-root .ml-filmstrip-bottom { bottom: 0; }
+
+.ml-root .ml-tile:hover .ml-filmstrip,
+.ml-root .ml-film-run .ml-filmstrip {
+  animation: ml-film 1.2s linear infinite;
+}
+
+@keyframes ml-film {
+  from { background-position: 0 6px, 0 0; }
+  to { background-position: 22px 6px, 0 0; }
+}
+
+.ml-root .ml-motif-rings {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  height: 150%;
+  max-height: 720px;
+  width: auto;
+  transform: translate(50%, -50%);
+}
+
+@media (min-width: 640px) {
+  .ml-root .ml-motif-rings {
+    transform: translate(30%, -50%);
+  }
+}
+
+.ml-root .ml-rings {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 1s var(--ml-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-tile:hover .ml-rings {
+    transform: scale(1.12);
+  }
+}
+
+.ml-root .ml-rings-breathe .ml-rings {
+  animation: ml-breathe 7s ease-in-out infinite;
+}
+
+/* Hallway ---------------------------------------------------------------------- */
+
+.ml-root .ml-hall {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px clamp(22px, 2.6vw, 34px);
+  background:
+    repeating-linear-gradient(45deg, transparent 0 9px, color-mix(in srgb, var(--t-ink) 7%, transparent) 9px 10px),
+    var(--t-bg);
+  font-family: var(--ml-sans);
+}
+
+.ml-root .ml-hall-label {
+  font-family: var(--ml-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--t-muted);
+}
+
+.ml-root .ml-hall-link {
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* Lower: Now and archive ---------------------------------------------------------- */
+
+.ml-root .ml-home-lower {
+  display: grid;
+  gap: 64px;
+  padding-bottom: clamp(72px, 10vw, 140px);
+  font-family: var(--ml-sans);
+}
+
+@media (min-width: 1000px) {
+  .ml-root .ml-home-lower {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 7%;
+    align-items: start;
+  }
+}
+
+.ml-root .ml-section-title {
+  font-family: var(--t-display);
+  font-style: var(--t-display-style);
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-display-track);
+  text-transform: var(--t-display-case);
+  font-size: clamp(30px, 3.4vw, 46px);
+  line-height: 1;
+  text-wrap: balance;
+}
+
+.ml-root .ml-now {
+  position: relative;
+  border: var(--ml-wall) solid var(--t-ink);
+  padding: clamp(22px, 3vw, 34px);
+  background: var(--t-bg);
+}
+
+/* A strip of tape: the block is hand-edited, and looks it. */
+.ml-root .ml-now::before {
+  content: "";
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 120px;
+  height: 30px;
+  background: color-mix(in srgb, var(--t-field) 30%, rgb(255 255 255 / 0.6));
+  transform: translateX(-50%) rotate(-3deg);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+}
+
+.ml-root .ml-now-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.ml-root .ml-now-title {
+  font-family: var(--t-display);
+  font-style: var(--t-display-style);
+  text-transform: var(--t-display-case);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-display-track);
+}
+
+.ml-root .ml-now-stamp {
+  font-family: var(--ml-hand);
+  font-size: 20px;
+  color: var(--t-muted);
+  transform: rotate(-2deg);
+}
+
+.ml-root .ml-now-list {
+  margin-top: 18px;
+}
+
+.ml-root .ml-now-item {
+  display: grid;
+  gap: 4px;
+  padding-block: 14px;
+  border-top: 1px solid var(--t-line);
+}
+
+@media (min-width: 560px) {
+  .ml-root .ml-now-item {
+    grid-template-columns: 7.5rem 1fr;
+    gap: 16px;
+    align-items: baseline;
+  }
+}
+
+.ml-root .ml-now-item dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ml-root .ml-now-item dd {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.ml-root .ml-archive {
+  margin-top: 22px;
+}
+
+/* Chips carry a room scope for their swatch; capture the frame's ink first
+   so a dark room (Screen) does not repaint its own chip's label. */
+.ml-root .ml-archive-filters {
+  --frame-ink: var(--t-ink);
+  --frame-bg: var(--t-bg);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ml-root .ml-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1.5px solid var(--frame-ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--frame-ink);
+  font: 600 14px/1 var(--ml-sans);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    transform 0.25s var(--ml-ease-snap);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ml-root .ml-chip:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.ml-root .ml-chip:active {
+  transform: scale(0.96);
+}
+
+.ml-root .ml-chip[aria-pressed="true"] {
+  background: var(--frame-ink);
+  color: var(--frame-bg);
+}
+
+.ml-root .ml-chip[data-room][aria-pressed="true"] {
+  background: var(--t-field);
+  color: var(--t-field-ink);
+  border-color: var(--t-field);
+}
+
+.ml-root .ml-chip[data-room="screen"][aria-pressed="true"] {
+  border-color: #eaa53e;
+}
+
+.ml-root .ml-chip-count {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.ml-root .ml-archive-list {
+  margin-top: 22px;
+  border-top: 2px solid var(--t-ink);
+}
+
+.ml-root .ml-archive-row {
+  border-bottom: 1px solid var(--t-line);
+  animation: ml-row-in 0.5s var(--ml-ease-out) calc(var(--i) * 45ms) both;
+}
+
+@keyframes ml-row-in {
+  from { opacity: 0; transform: translateX(-14px); }
+  to { opacity: 1; transform: none; }
+}
+
+.ml-root .ml-archive-link {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 4px;
+  padding: 15px 10px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.ml-root .ml-archive-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--t-field);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s var(--ml-ease-out);
+}
+
+.ml-root .ml-archive-link:hover,
+.ml-root .ml-archive-link:focus-visible {
+  color: var(--t-field-ink);
+}
+
+.ml-root [data-room="screen"] .ml-archive-link:hover,
+.ml-root [data-room="screen"] .ml-archive-link:focus-visible {
+  color: #f3e9d8;
+}
+
+.ml-root .ml-archive-link:hover::before,
+.ml-root .ml-archive-link:focus-visible::before {
+  transform: scaleX(1);
+}
+
+@media (min-width: 640px) {
+  .ml-root .ml-archive-link {
+    grid-template-columns: 7.5rem minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: baseline;
+  }
+}
+
+.ml-root .ml-archive-room {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.ml-root .ml-archive-title {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.ml-root .ml-archive-meta {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}

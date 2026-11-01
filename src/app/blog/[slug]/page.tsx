@@ -1,41 +1,33 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import {
-  getAllPostsMeta,
-  getPostSlugs,
-  getPostSource,
-  getRelatedPosts,
-  PostNotFoundError,
-} from "@/lib/posts";
+import type { ComponentPropsWithoutRef } from "react";
 import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypePrettyCode from "rehype-pretty-code";
 import rehypeInlineCodeToPre from "@/lib/rehype-inline-code-to-pre";
-import {
-  composeTableOfContents,
-  extractTableOfContents,
-  TOC_MIN_HEADINGS,
-} from "@/lib/toc";
-import { ArticleOpening } from "@/components/article/article-opening";
-import { ArticleToc } from "@/components/article/article-toc";
-import { ArticleAuthor } from "@/components/article/article-author";
-import { ArticlePagination } from "@/components/article/article-pagination";
-import { RelatedEssays } from "@/components/article/related-essays";
-import { SocialShare } from "@/components/social-share";
 import { JsonLd } from "@/components/json-ld";
 import { absoluteUrl, AUTHOR_NAME, RSS_ALTERNATE, SITE_NAME } from "@/lib/site";
+import { getPostSlugs, getRelatedPosts, PostNotFoundError } from "@/lib/posts";
+import { getAllPostsWithStats, getPostWithStats, toPiece, type PostWithStats } from "@/components/house/data";
+import { EssayEnding } from "@/components/house/essay/endings";
+import { EssayHero, type EssayInfo } from "@/components/house/essay/heroes";
+import { EssayMore, type MoreLink } from "@/components/house/essay/more";
+import { SectionHeading } from "@/components/house/essay/section-heading";
+import { ARTICLE_ID, EssayToc, StickyMeter } from "@/components/house/essay/toc";
+import { RoomsNextDoor } from "@/components/house/next-door";
+import { postsInRoom, roomsForPost } from "@/components/house/rooms";
 
 type Params = { params: Promise<{ slug: string }> };
 
-export async function generateStaticParams() {
+export function generateStaticParams() {
   return getPostSlugs().map((slug) => ({ slug }));
 }
 
-function getPostOrNotFound(slug: string) {
+function load(slug: string) {
   try {
-    return getPostSource(slug);
+    return getPostWithStats(slug);
   } catch (error) {
     if (error instanceof PostNotFoundError) notFound();
     throw error;
@@ -44,7 +36,7 @@ function getPostOrNotFound(slug: string) {
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const { meta } = getPostOrNotFound(slug);
+  const { post: meta } = load(slug);
 
   const canonical = `/blog/${slug}`;
   const ogImageUrl = `${canonical}/opengraph-image`;
@@ -86,12 +78,41 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
+function toLink(post: PostWithStats): MoreLink {
+  return { slug: post.slug, title: post.title, room: post.room, displayDate: post.displayDate, readingTime: post.readingTime };
+}
+
 export default async function PostPage({ params }: Params) {
   const { slug } = await params;
-  const { meta, content: source } = getPostOrNotFound(slug);
+  const { post, content: source } = load(slug);
+  const { room, stats } = post;
 
+  const sectionIndex = new Map(stats.sections.map((section, index) => [section.id, index]));
+  const HeadingTag = stats.sectionLevel === 2 ? "h2" : "h3";
+  const RoomHeading = ({ id, children, ...rest }: ComponentPropsWithoutRef<"h2">) => {
+    const index = id ? sectionIndex.get(id) : undefined;
+    if (index === undefined || !id) {
+      return (
+        <HeadingTag id={id} {...rest}>
+          {children}
+        </HeadingTag>
+      );
+    }
+    // Life's handwritten margin only notes the minute when it moves on.
+    const previous = index > 0 ? stats.minuteAt[stats.sections[index - 1].id] : undefined;
+    const minute = room === "life" && previous === stats.minuteAt[id] ? undefined : stats.minuteAt[id];
+    return (
+      <SectionHeading room={room} level={stats.sectionLevel} index={index} minute={minute} id={id}>
+        {children}
+      </SectionHeading>
+    );
+  };
+
+  // Section headings are dressed per room; the rest of the MDX pipeline is
+  // the publication's standard one.
   const { content } = await compileMDX({
     source,
+    components: { [HeadingTag]: RoomHeading },
     options: {
       parseFrontmatter: false,
       mdxOptions: {
@@ -103,8 +124,6 @@ export default async function PostPage({ params }: Params) {
           [
             rehypePrettyCode,
             {
-              // Dual-theme tokens switch with next-themes' `.light` class;
-              // CSS in article.css resolves --shiki-dark/--shiki-light.
               theme: { dark: "github-dark", light: "github-light" },
               keepBackground: false,
               defaultLang: "ts",
@@ -115,28 +134,33 @@ export default async function PostPage({ params }: Params) {
     },
   });
 
-  const toc = composeTableOfContents(extractTableOfContents(source));
-  const showToc = toc.length >= TOC_MIN_HEADINGS;
-
-  const allPosts = getAllPostsMeta();
-  const postIndex = allPosts.findIndex((post) => post.slug === slug);
-  const newerPost = postIndex > 0 ? allPosts[postIndex - 1] : null;
-  const olderPost =
-    postIndex >= 0 && postIndex < allPosts.length - 1
-      ? allPosts[postIndex + 1]
-      : null;
-
-  const relatedPosts = getRelatedPosts(slug, meta.topics, 3);
+  const all = getAllPostsWithStats();
+  const position = all.findIndex((item) => item.slug === slug);
+  const inRoom = postsInRoom(all, room);
+  const info: EssayInfo = {
+    piece: toPiece(post),
+    number: inRoom.findIndex((item) => item.slug === slug) + 1,
+    alsoIn: roomsForPost(post).filter((id) => id !== room),
+    updatedDisplayDate: post.updatedDisplayDate,
+  };
+  const bySlug = new Map(all.map((item) => [item.slug, item]));
+  const related = getRelatedPosts(slug, post.topics, 3)
+    .flatMap((meta) => {
+      const match = bySlug.get(meta.slug);
+      return match ? [toLink(match)] : [];
+    });
+  const newer = position > 0 ? toLink(all[position - 1]) : undefined;
+  const older = position >= 0 && position < all.length - 1 ? toLink(all[position + 1]) : undefined;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
-    headline: meta.title,
-    description: meta.description,
-    datePublished: meta.dateISO,
-    ...(meta.updated ? { dateModified: meta.updated } : {}),
-    articleSection: meta.lane,
-    keywords: meta.topics,
+    headline: post.title,
+    description: post.description,
+    datePublished: post.dateISO,
+    ...(post.updated ? { dateModified: post.updated } : {}),
+    articleSection: post.lane,
+    keywords: post.topics,
     author: {
       "@type": "Person",
       name: AUTHOR_NAME,
@@ -152,39 +176,23 @@ export default async function PostPage({ params }: Params) {
   };
 
   return (
-    <>
+    <main data-room={room} className="ml-essay" data-sections={stats.sections.length}>
       <JsonLd data={jsonLd} />
-      {/* Bottom padding keeps the fixed share bar clear of the ending; the
-          footer adds its own clearance on article routes via body:has(). */}
-      <article className="pb-24">
-        <ArticleOpening meta={meta} />
-
-        {showToc ? (
-          <div className="mt-10 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-12">
-            <div className="lg:sticky lg:top-20 lg:self-start">
-              <ArticleToc headings={toc} />
-            </div>
-            <div className="prose article-prose mx-auto min-w-0 lg:mx-0">{content}</div>
-          </div>
-        ) : (
-          <div className="prose article-prose mx-auto mt-10">{content}</div>
-        )}
-
-        <div className="article-prose mx-auto">
-          <div className="mt-16 flex items-center gap-4 border-t border-border pt-10">
-            <span aria-hidden="true" className="h-px flex-1 bg-border" />
-            <p className="font-mono text-sm uppercase tracking-[0.3em] text-muted-foreground">
-              ~ FIN ~
-            </p>
-            <span aria-hidden="true" className="h-px flex-1 bg-border" />
-          </div>
-
-          <ArticleAuthor />
-          <ArticlePagination newer={newerPost} older={olderPost} />
-          <RelatedEssays posts={relatedPosts} />
-        </div>
-      </article>
-      <SocialShare title={meta.title} slug={slug} />
-    </>
+      <EssayHero room={room} info={info} />
+      {room === "ring" || room === "screen" ? (
+        <StickyMeter room={room} sections={stats.sections} readingTime={post.readingTime} />
+      ) : null}
+      <div className="ml-wrap ml-essay-body">
+        <aside className="ml-essay-aside">
+          <EssayToc room={room} sections={stats.sections} minuteAt={stats.minuteAt} />
+        </aside>
+        <article id={ARTICLE_ID} className="ml-prose">
+          {content}
+        </article>
+      </div>
+      <EssayEnding room={room} info={info} />
+      <EssayMore room={room} related={related} older={older} newer={newer} />
+      <RoomsNextDoor current={room} label="Down the hall" />
+    </main>
   );
 }

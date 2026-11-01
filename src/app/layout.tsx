@@ -1,14 +1,25 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Playfair_Display } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import "./article.css";
 import "./article-code.css";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import "@/components/house/styles/base.css";
+import "@/components/house/styles/chrome.css";
+import "@/components/house/styles/transitions.css";
+import "@/components/house/styles/home.css";
+import "@/components/house/styles/prose.css";
+import "@/components/house/styles/engineering.css";
+import "@/components/house/styles/ring.css";
+import "@/components/house/styles/screen.css";
+import "@/components/house/styles/life.css";
+import "@/components/house/styles/house.css";
+import "@/components/house/styles/pages.css";
 import { Matomo } from "@/components/analytics/matomo";
 import { JsonLd } from "@/components/json-ld";
+import { ShellFooter, ShellNav, ShellOverlays } from "@/components/house/chrome";
+import { roomFontVariables } from "@/components/house/fonts";
+import { primaryRoom, type RoomId } from "@/components/house/rooms";
+import { ManyLivesShell } from "@/components/house/shell";
+import { getAllPostsMeta } from "@/lib/posts";
 import {
   AUTHOR_NAME,
   PUBLICATION_NAME,
@@ -19,21 +30,8 @@ import {
   SITE_URL,
 } from "@/lib/site";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  display: "swap",
-});
-
-// Only the weights/styles actually used in the UI and prose are declared.
-// Remaining weights (100/200/800/900 and extra italics) fall back to the
-// closest declared weight instead of shipping as separate font payloads.
+// The shared frame is set in Helvetica Neue; each room adds its own accent
+// face (see components/house/fonts.ts). Only the weights in use are declared.
 const helveticaNeue = localFont({
   variable: "--font-helvetica-neue",
   display: "swap",
@@ -104,24 +102,28 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Essays take their room from frontmatter; the shell needs the map to theme
+  // /blog/[slug] before the page renders.
+  const slugRooms: Record<string, RoomId> = Object.fromEntries(
+    getAllPostsMeta().map((post) => [post.slug, primaryRoom(post)])
+  );
+
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${playfair.variable} ${geistMono.variable} ${helveticaNeue.variable} ${helveticaNeue.className} antialiased`}>
-        <ThemeProvider>
-          <Matomo />
-          <JsonLd data={personJsonLd} />
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:rounded-sm focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:text-accent-foreground"
-          >
+    <html lang="en">
+      <body className={`${helveticaNeue.variable} ${roomFontVariables} antialiased`}>
+        <Matomo />
+        <JsonLd data={personJsonLd} />
+        <ManyLivesShell slugRooms={slugRooms}>
+          <a href="#main-content" className="ml-skip">
             Skip to content
           </a>
-          <SiteHeader />
-          <div id="main-content" className="mx-auto min-h-[70vh] max-w-[1100px] px-4 py-10">
+          <ShellOverlays />
+          <ShellNav />
+          <div id="main-content" className="ml-stage">
             {children}
           </div>
-          <SiteFooter />
-        </ThemeProvider>
+          <ShellFooter />
+        </ManyLivesShell>
       </body>
     </html>
   );

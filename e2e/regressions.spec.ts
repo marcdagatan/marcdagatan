@@ -1,14 +1,22 @@
 import { test, expect } from "@playwright/test";
 import { collectPageErrors, expectNoHorizontalOverflow } from "./helpers";
 
-const KEY_PAGES = ["/", "/blog", "/blog/010-skills-router"] as const;
+const KEY_PAGES = [
+  "/",
+  "/blog",
+  "/about",
+  "/cv",
+  "/rooms/engineering",
+  "/blog/010-skills-router",
+  "/blog/001-the-first-bell",
+] as const;
 
 test("key reader pages emit no console or page errors", async ({ page }) => {
   const errors = collectPageErrors(page);
   for (const path of KEY_PAGES) {
     await page.goto(path);
-    // Every page shares the #main-content wrapper (skip-link target); article
-    // pages use <article>, so this is the stable "page rendered" marker.
+    // Every page renders inside the house frame's #main-content stage (the
+    // skip-link target), so this is the stable "page rendered" marker.
     await expect(page.locator("#main-content")).toBeVisible();
   }
   expect(errors).toEqual([]);

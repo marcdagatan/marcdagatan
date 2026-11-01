@@ -1,0 +1,388 @@
+/* ---------------------------------------------------------------------------
+   The Many Lives: tokens and shared primitives.
+
+   Every selector is scoped under .ml-root. The only document-level rules are
+   @property registrations (uniquely prefixed --t-*, they style nothing on
+   their own) and the View Transition pseudo-elements in transitions.css,
+   which only apply while html carries data-ml-to.
+
+   Registering the theme colors lets the shell interpolate them, so changing
+   data-theme repaints the entire site as one continuous color move.
+--------------------------------------------------------------------------- */
+
+@property --t-bg { syntax: "<color>"; inherits: true; initial-value: #edeeea; }
+@property --t-surface { syntax: "<color>"; inherits: true; initial-value: #e2e4df; }
+@property --t-ink { syntax: "<color>"; inherits: true; initial-value: #16181c; }
+@property --t-muted { syntax: "<color>"; inherits: true; initial-value: #565a60; }
+@property --t-accent { syntax: "<color>"; inherits: true; initial-value: #16181c; }
+@property --t-line { syntax: "<color>"; inherits: true; initial-value: #c6c9c3; }
+@property --t-field { syntax: "<color>"; inherits: true; initial-value: #16181c; }
+@property --t-field-ink { syntax: "<color>"; inherits: true; initial-value: #edeeea; }
+@property --t-field-accent { syntax: "<color>"; inherits: true; initial-value: #edeeea; }
+@property --t-nav-bg { syntax: "<color>"; inherits: true; initial-value: #edeeea; }
+@property --t-nav-ink { syntax: "<color>"; inherits: true; initial-value: #16181c; }
+
+/* Themes ------------------------------------------------------------------ */
+
+.ml-root,
+.ml-root[data-theme="home"],
+.ml-root[data-theme="house"] {
+  --t-bg: #edeeea;
+  --t-surface: #e2e4df;
+  --t-ink: #16181c;
+  --t-muted: #565a60;
+  --t-accent: #16181c;
+  --t-line: #c6c9c3;
+  --t-field: #16181c;
+  --t-field-ink: #edeeea;
+  --t-field-accent: #edeeea;
+  --t-nav-bg: #edeeea;
+  --t-nav-ink: #16181c;
+
+  --ml-sans:
+    var(--font-helvetica-neue), "Helvetica Neue", Helvetica, Arial, system-ui,
+    sans-serif;
+  --ml-mono: var(--ml-font-engineering), ui-monospace, Menlo, monospace;
+  --ml-condensed: var(--ml-font-ring), Impact, "Arial Narrow", sans-serif;
+  --ml-cinema: var(--ml-font-screen), Georgia, "Times New Roman", serif;
+  --ml-soft: var(--ml-font-life), Georgia, serif;
+  --ml-hand: var(--ml-font-hand), "Bradley Hand", cursive;
+
+  --t-display: var(--ml-sans);
+  --t-display-style: normal;
+  --t-display-weight: 700;
+  --t-display-case: none;
+  --t-display-track: -0.035em;
+  --t-display-lead: 0.95;
+  --t-body: var(--ml-sans);
+
+  --ml-wall: 6px;
+  --ml-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ml-ease-snap: cubic-bezier(0.3, 1.5, 0.45, 1);
+  --ml-ease-slow: cubic-bezier(0.45, 0, 0.2, 1);
+  --ml-morph: 0.8s;
+}
+
+.ml-root[data-theme="engineering"],
+.ml-root [data-room="engineering"] {
+  --t-bg: #e8ecf6;
+  --t-surface: #dde3f2;
+  --t-ink: #0f1a3d;
+  --t-muted: #46527a;
+  --t-accent: #1f3fa8;
+  --t-line: #a9b5dc;
+  --t-field: #1f3fa8;
+  --t-field-ink: #f2f5ff;
+  --t-field-accent: #a9d4ff;
+  --t-nav-bg: #1f3fa8;
+  --t-nav-ink: #f2f5ff;
+  --t-display: var(--ml-mono);
+  --t-display-style: normal;
+  --t-display-weight: 600;
+  --t-display-case: none;
+  --t-display-track: -0.045em;
+  --t-display-lead: 1;
+  --t-body: var(--ml-sans);
+}
+
+.ml-root[data-theme="ring"],
+.ml-root [data-room="ring"] {
+  --t-bg: #f6efd6;
+  --t-surface: #efe4bf;
+  --t-ink: #17140e;
+  --t-muted: #5c5340;
+  --t-accent: #a3241a;
+  --t-line: #d9cba0;
+  --t-field: #f2c230;
+  --t-field-ink: #15130f;
+  --t-field-accent: #a3241a;
+  --t-nav-bg: #15130f;
+  --t-nav-ink: #f2c230;
+  --t-display: var(--ml-condensed);
+  --t-display-style: normal;
+  --t-display-weight: 400;
+  --t-display-case: uppercase;
+  --t-display-track: 0;
+  --t-display-lead: 0.9;
+  --t-body: var(--ml-sans);
+}
+
+.ml-root[data-theme="screen"],
+.ml-root [data-room="screen"] {
+  --t-bg: #0e1422;
+  --t-surface: #151d30;
+  --t-ink: #e9e2d4;
+  --t-muted: #aaa497;
+  --t-accent: #eaa53e;
+  --t-line: #2b3550;
+  --t-field: #05070c;
+  --t-field-ink: #f3e9d8;
+  --t-field-accent: #eaa53e;
+  --t-nav-bg: #05070c;
+  --t-nav-ink: #e9e2d4;
+  --t-display: var(--ml-cinema);
+  --t-display-style: italic;
+  --t-display-weight: 400;
+  --t-display-case: none;
+  --t-display-track: -0.015em;
+  --t-display-lead: 0.95;
+  --t-body: var(--ml-sans);
+  color-scheme: dark;
+}
+
+.ml-root[data-theme="life"],
+.ml-root [data-room="life"] {
+  --t-bg: #eef1e8;
+  --t-surface: #e2e8da;
+  --t-ink: #2c1727;
+  --t-muted: #5e4b58;
+  --t-accent: #8a3a5d;
+  --t-line: #c9d2bf;
+  --t-field: #c7d6bd;
+  --t-field-ink: #3a1d33;
+  --t-field-accent: #8a3a5d;
+  --t-nav-bg: #eef1e8;
+  --t-nav-ink: #2c1727;
+  --t-display: var(--ml-soft);
+  --t-display-style: italic;
+  --t-display-weight: 400;
+  --t-display-case: none;
+  --t-display-track: -0.03em;
+  --t-display-lead: 0.98;
+  --t-body: var(--ml-soft);
+}
+
+/* Root ---------------------------------------------------------------------- */
+
+.ml-root {
+  background: var(--t-bg);
+  color: var(--t-ink);
+  font-family: var(--t-body);
+  font-size: 17px;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color-scheme: light;
+  scroll-padding-top: 6rem;
+  transition:
+    --t-bg var(--ml-morph) var(--ml-ease-slow),
+    --t-surface var(--ml-morph) var(--ml-ease-slow),
+    --t-ink var(--ml-morph) var(--ml-ease-slow),
+    --t-muted var(--ml-morph) var(--ml-ease-slow),
+    --t-accent var(--ml-morph) var(--ml-ease-slow),
+    --t-line var(--ml-morph) var(--ml-ease-slow),
+    --t-field var(--ml-morph) var(--ml-ease-slow),
+    --t-field-ink var(--ml-morph) var(--ml-ease-slow),
+    --t-field-accent var(--ml-morph) var(--ml-ease-slow),
+    --t-nav-bg var(--ml-morph) var(--ml-ease-slow),
+    --t-nav-ink var(--ml-morph) var(--ml-ease-slow);
+}
+
+.ml-root[data-theme="life"] {
+  font-variation-settings: "SOFT" 50, "opsz" 14;
+}
+
+.ml-root ::selection {
+  background: var(--t-accent);
+  color: var(--t-bg);
+}
+
+.ml-root :focus-visible {
+  outline: 3px solid var(--t-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.ml-root a,
+.ml-root button {
+  color: inherit;
+  transition:
+    color 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+.ml-root a,
+.ml-root button,
+.ml-root [role="button"] {
+  cursor: pointer;
+}
+
+/* Room cursors: drafting crosshair, glove, viewfinder, ink dot. */
+.ml-root[data-theme="engineering"] { cursor: crosshair; }
+.ml-root[data-theme="ring"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='9' fill='%2315130f' stroke='%23f2c230' stroke-width='3'/%3E%3C/svg%3E") 14 14, auto;
+}
+.ml-root[data-theme="screen"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='10' fill='none' stroke='%23eaa53e' stroke-width='1.5'/%3E%3Ccircle cx='14' cy='14' r='2' fill='%23eaa53e'/%3E%3C/svg%3E") 14 14, auto;
+}
+.ml-root[data-theme="life"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='6' fill='%238a3a5d' fill-opacity='0.75'/%3E%3C/svg%3E") 10 10, auto;
+}
+
+/* Stage sits above the fixed overlays, below the nav. */
+.ml-root .ml-stage {
+  position: relative;
+  z-index: 2;
+  min-height: 70vh;
+}
+
+.ml-root .ml-wrap {
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 48px);
+}
+
+/* Display face of whichever room is in scope. */
+.ml-root .ml-display {
+  font-family: var(--t-display);
+  font-style: var(--t-display-style);
+  font-weight: var(--t-display-weight);
+  letter-spacing: var(--t-display-track);
+  line-height: var(--t-display-lead);
+  text-transform: var(--t-display-case);
+  text-wrap: balance;
+}
+
+.ml-root [data-room="life"] .ml-display,
+.ml-root[data-theme="life"] .ml-display {
+  font-variation-settings: "SOFT" 100, "opsz" 96;
+}
+
+.ml-root .ml-swatch {
+  display: inline-block;
+  flex: none;
+  width: 0.72em;
+  height: 0.72em;
+  background: var(--t-field);
+  /* Outline in the surrounding frame's ink, not the swatch room's own, so a
+     room's swatch stays visible on that room's own field (Ring on yellow). */
+  box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--frame-ink, var(--t-ink)) 75%, transparent);
+  transition: transform 0.3s var(--ml-ease-snap);
+}
+
+.ml-root .ml-footer-rooms {
+  --frame-ink: var(--t-field-ink);
+}
+
+.ml-root .ml-nav-rooms {
+  --frame-ink: var(--t-nav-ink);
+}
+
+.ml-root [data-room="screen"] .ml-swatch {
+  background: #0f1626;
+  box-shadow: inset 0 0 0 2px #eaa53e;
+}
+
+.ml-root .ml-eyebrow {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.ml-root .ml-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Underline that draws in on hover, in the room's accent. */
+.ml-root .ml-u {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 2px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 0.45s var(--ml-ease-out);
+  padding-bottom: 2px;
+}
+
+.ml-root a:hover .ml-u,
+.ml-root a:focus-visible .ml-u,
+.ml-root a.ml-u:hover,
+.ml-root a.ml-u:focus-visible {
+  background-size: 100% 2px;
+}
+
+/* Scroll-driven reveals --------------------------------------------------
+   Content is fully visible without support. With support, modules settle
+   as they enter, finishing well before they reach reading height. Each
+   room overrides the keyframes with its own grammar. */
+
+@keyframes ml-reveal-default {
+  /* No end keyframe: the reveal settles on the element's own value, so a filled
+     reveal never overrides hover transforms. */
+  from { opacity: 0.001; transform: translateY(36px); }
+}
+
+@supports (animation-timeline: view()) {
+  .ml-root .ml-reveal {
+    animation: ml-reveal-default linear both;
+    animation-timeline: view();
+    animation-range: entry 5% entry 70%;
+  }
+}
+
+/* Hover hit-area guard ---------------------------------------------------------
+   These targets lift or slide a few pixels on hover. Without a guard, a
+   pointer resting near the edge falls off the moved box, hover ends, the box
+   returns under the pointer, and hover starts again: an endless flicker.
+   While hovered, a transparent ::after grows the hit area so it always covers
+   the resting box. inset is measured from the padding box, so 16px covers a
+   border up to 8px plus the largest offset (6px). It sits behind
+   the host's content (isolated, z-index -1) so inner links stay clickable. */
+
+.ml-root :is(.ml-eng-button, .ml-router-layer, .ml-eng-bom-group, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout) {
+  position: relative;
+  isolation: isolate;
+}
+
+.ml-root :is(.ml-eng-button, .ml-router-layer, .ml-eng-bom-group, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout):hover::after {
+  content: "";
+  position: absolute;
+  inset: -16px;
+  z-index: -1;
+}
+
+/* Ambient float used by decorative layers. */
+@keyframes ml-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+
+@keyframes ml-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Motion off ------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .ml-root,
+  .ml-root *,
+  .ml-root *::before,
+  .ml-root *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* Scroll-driven timelines ignore the duration collapse above, so every
+     view() animation is switched off and its element left in its final
+     state. :root raises specificity; the bell needs one more class to beat
+     ring.css's own !important rule. The reading-progress bar (scroll(root))
+     stays: it tracks the reader's own scrolling, it is not decorative motion. */
+  :root .ml-root .ml-reveal,
+  :root .ml-root [class*="ml-sd-"],
+  :root .ml-root .ml-prose .ml-sec .ml-sec-tag,
+  :root .ml-root .ml-sec-clap,
+  :root .ml-root .ml-life-sign,
+  :root .ml-root .ml-end-life-sign,
+  :root .ml-root .ml-end-ring-bell.ml-reveal {
+    animation: none !important;
+  }
+}
