@@ -155,8 +155,12 @@ function faviconFor(theme: Theme): string {
     ].join("");
   } else {
     const room = ROOMS[theme];
-    const glyph = room.name[0];
-    body = `<rect width="32" height="32" rx="${theme === "life" ? 16 : 3}" fill="${room.field}"/><text x="16" y="23" text-anchor="middle" font-family="Helvetica,Arial,sans-serif" font-weight="700" font-size="20" fill="${room.ink}">${glyph}</text>`;
+    // Engineering wears a shell prompt; the other rooms their initial.
+    const glyph = theme === "engineering" ? "&gt;_" : room.name[0];
+    const font = theme === "engineering" ? "Menlo,Consolas,monospace" : "Helvetica,Arial,sans-serif";
+    const size = theme === "engineering" ? 15 : 20;
+    const baseline = theme === "engineering" ? 21 : 23;
+    body = `<rect width="32" height="32" rx="${theme === "life" ? 16 : 3}" fill="${room.field}"/><text x="16" y="${baseline}" text-anchor="middle" font-family="${font}" font-weight="700" font-size="${size}" fill="${room.ink}">${glyph}</text>`;
   }
   return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${body}</svg>`)}`;
 }

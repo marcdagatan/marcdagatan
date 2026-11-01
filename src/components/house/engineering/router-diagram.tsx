@@ -7,9 +7,10 @@ import { usePrefersReducedMotion, useSeen } from "../hooks";
 const STEP_MS = 3200;
 
 /**
- * The Skills Router as an interactive drawing. A request packet travels
- * down the five layers; readers can step through by hand. It plays once on
- * its own when scrolled into view, and stops the moment someone takes over.
+ * The Skills Router as a request trace. A request hops rules → router →
+ * skill → guard → verify, and the trace log beside it records each hop.
+ * Readers can step through by hand. It plays once on its own when scrolled
+ * into view, and stops the moment someone takes over. Nothing loops.
  */
 export function RouterDiagram() {
   const [ref, seen] = useSeen<HTMLDivElement>(0.4);
@@ -19,6 +20,7 @@ export function RouterDiagram() {
   const [started, setStarted] = useState(false);
   const layer = ROUTER_LAYERS[active];
   const last = ROUTER_LAYERS.length - 1;
+  const done = active === last && !playing;
 
   useEffect(() => {
     if (seen && !started && !reduced) {
@@ -44,9 +46,12 @@ export function RouterDiagram() {
   return (
     <div ref={ref} className="ml-router" data-playing={playing ? "true" : undefined}>
       <div className="ml-router-head">
-        <p className="ml-router-title">Fig. 1: Skills Router, request path</p>
+        <p className="ml-router-title">
+          <span aria-hidden="true" className="ml-router-dots" />
+          trace: skills-router
+        </p>
         <div className="ml-router-controls">
-          <button type="button" onClick={() => go(active - 1)} disabled={active === 0} aria-label="Previous layer">
+          <button type="button" onClick={() => go(active - 1)} disabled={active === 0} aria-label="Previous hop">
             ←
           </button>
           <button
@@ -60,44 +65,57 @@ export function RouterDiagram() {
             }}
             aria-pressed={playing}
           >
-            {playing ? "Pause" : active >= last ? "Replay" : "Play"}
+            {playing ? "Pause" : active >= last ? "Re-run" : "Run"}
           </button>
-          <button type="button" onClick={() => go(active + 1)} disabled={active === last} aria-label="Next layer">
+          <button type="button" onClick={() => go(active + 1)} disabled={active === last} aria-label="Next hop">
             →
           </button>
         </div>
       </div>
 
-      <div className="ml-router-body">
-        <ol className="ml-router-stack" style={{ "--active": active } as React.CSSProperties}>
-          <li aria-hidden="true" className="ml-router-request">request</li>
+      <ol className="ml-router-flow" aria-label="Request flow">
+        <li aria-hidden="true" className="ml-router-io">request</li>
+        {ROUTER_LAYERS.map((item, index) => (
+          <li key={item.id}>
+            <button
+              type="button"
+              className="ml-router-node"
+              data-state={index < active ? "done" : index === active ? "active" : undefined}
+              aria-current={index === active ? "step" : undefined}
+              onClick={() => go(index)}
+            >
+              <span className="ml-router-node-name">{item.node}</span>
+              <span className="ml-router-node-layer">{item.name}</span>
+            </button>
+          </li>
+        ))}
+        <li aria-hidden="true" className="ml-router-io ml-router-out" data-ok={done ? "true" : undefined}>
+          200 OK
+        </li>
+      </ol>
+
+      <div className="ml-router-log">
+        <p aria-hidden="true" className="ml-router-cmd">
+          <span className="ml-eng-prompt">$</span> trace --hop {active + 1}/{ROUTER_LAYERS.length}
+        </p>
+        <ol aria-hidden="true" className="ml-router-lines">
           {ROUTER_LAYERS.map((item, index) => (
-            <li key={item.id}>
-              <button
-                type="button"
-                className="ml-router-layer"
-                data-state={index < active ? "done" : index === active ? "active" : undefined}
-                aria-current={index === active ? "step" : undefined}
-                onClick={() => go(index)}
-              >
-                <span className="ml-router-n">L{index + 1}</span>
-                <span className="ml-router-name">{item.name}</span>
-                <span aria-hidden="true" className="ml-router-led" />
-              </button>
+            <li key={item.id} data-state={index < active ? "done" : index === active ? "active" : "pending"}>
+              <span className="ml-router-mark">{index < active ? "✓" : index === active ? "▸" : "·"}</span>
+              <span className="ml-router-line-node">{item.node}</span>
+              <span className="ml-router-line-tag">{item.tag}</span>
             </li>
           ))}
-          <li aria-hidden="true" className="ml-router-packet" />
         </ol>
-
-        <div className="ml-router-detail" aria-live="polite">
+        <div className="ml-router-now" aria-live="polite">
           <p key={`tag-${layer.id}`} className="ml-router-tag">
-            Layer {active + 1} of {ROUTER_LAYERS.length}: {layer.tag}
+            Hop {active + 1} of {ROUTER_LAYERS.length}, {layer.name}: {layer.tag}
           </p>
           <p key={`body-${layer.id}`} className="ml-router-text">
             {layer.body}
           </p>
-          <span key={`bar-${layer.id}-${playing}`} aria-hidden="true" className="ml-router-timer" />
         </div>
+        <span key={`bar-${layer.id}-${playing}`} aria-hidden="true" className="ml-router-timer" />
       </div>
     </div>
   );

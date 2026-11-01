@@ -5,7 +5,7 @@
    html[data-ml-to], which the shell sets only for the duration of its own
    transitions. The destination room picks the choreography:
 
-     engineering  old recedes, new plots in behind a moving scan edge
+     engineering  old clears like a terminal, new prints in top down
      ring         old is punched out, new slams in and settles
      screen       fade through black, projector flicker on the way up
      life         new spreads like ink from the click point
@@ -78,11 +78,14 @@ html[data-ml-to="house"]::view-transition-new(root) {
 }
 
 /* Engineering */
+html[data-ml-to="engineering"]::view-transition {
+  background: #101815;
+}
 html[data-ml-to="engineering"]::view-transition-old(root) {
-  animation: ml-vt-recede 0.7s cubic-bezier(0.7, 0, 0.2, 1) both;
+  animation: ml-vt-clear 0.24s steps(3, end) both;
 }
 html[data-ml-to="engineering"]::view-transition-new(root) {
-  animation: ml-vt-plot 0.9s cubic-bezier(0.7, 0, 0.2, 1) both;
+  animation: ml-vt-print 0.7s steps(12, end) 0.18s both;
 }
 
 /* Ring */
@@ -134,12 +137,12 @@ html[data-ml-to="life"]::view-transition-new(root) {
   to { opacity: 1; transform: none; }
 }
 
-@keyframes ml-vt-recede {
-  to { opacity: 0.25; transform: scale(0.96); }
+@keyframes ml-vt-clear {
+  to { opacity: 0; }
 }
 
-@keyframes ml-vt-plot {
-  from { clip-path: inset(0 100% 0 0); }
+@keyframes ml-vt-print {
+  from { clip-path: inset(0 0 100% 0); }
   to { clip-path: inset(0 0 0 0); }
 }
 

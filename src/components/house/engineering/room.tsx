@@ -4,17 +4,29 @@ import { ENGINEERING_NOTES, ROOM_COPY } from "../content";
 import type { RoomProps } from "../data";
 import { PointerField } from "../pointer-field";
 import { RoomLink } from "../room-link";
-import { pad, postHref, ROOMS } from "../rooms";
+import { postHref, ROOMS } from "../rooms";
+import { shortHash } from "./git";
 import { RouterDiagram } from "./router-diagram";
 
+const GUTTER_LINES = Array.from({ length: 24 }, (_, index) => index + 1);
+
+/** Files open in the room's editor; each tab jumps to its section. */
+const TABS = [
+  { href: "#ml-eng-readme", label: "README.md" },
+  { href: "#ml-eng-head", label: "HEAD" },
+  { href: "#ml-eng-log", label: "git log" },
+  { href: "#ml-eng-deps", label: "package.json" },
+] as const;
+
 /**
- * Engineering is a drawing set: a blueprint title sheet, general notes, a
- * detail callout for the lead piece, a drawing register, and a bill of
- * materials. Everything is drawn, nothing is decorated.
+ * Engineering is a developer's workspace: an editor window with tabs and a
+ * gutter, a README and its principles as code, the lead piece as the latest
+ * commit with its checks and a request trace, the room's posts as a git log,
+ * and the stack as an `npm ls` tree.
  */
 export function EngineeringRoom({ pieces, featured }: RoomProps) {
   const newest = pieces[0];
-  const materials = [
+  const dependencies = [
     ...CV_DATA.skillGroups.map((group) => ({ label: group.label, items: group.items })),
     { label: "Kravos AI", items: KRAVOS_EXPERIENCE.stack },
   ];
@@ -22,76 +34,106 @@ export function EngineeringRoom({ pieces, featured }: RoomProps) {
   return (
     <>
       <PointerField className="ml-eng-hero ml-hero-morph">
-        <div aria-hidden="true" className="ml-eng-grid" />
-        <div aria-hidden="true" className="ml-eng-cross">
-          <span className="ml-eng-cross-x" />
-          <span className="ml-eng-cross-y" />
-        </div>
-        <div className="ml-wrap ml-eng-hero-inner">
-          <div className="ml-eng-dim" aria-hidden="true">
-            <span className="ml-eng-dim-line" />
-            <span className="ml-eng-dim-label">{pieces.length} sheets in this set</span>
+        <nav aria-label="Room files" className="ml-eng-tabs">
+          <ul className="ml-wrap">
+            {TABS.filter((tab) => featured || tab.href !== "#ml-eng-head").map((tab, index) => (
+              <li key={tab.href}>
+                <a href={tab.href} className="ml-eng-tab" data-active={index === 0 ? "true" : undefined}>
+                  {tab.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <div aria-hidden="true" className="ml-eng-linehl" />
+        <div className="ml-wrap ml-eng-editor">
+          <ol aria-hidden="true" className="ml-eng-gutter">
+            {GUTTER_LINES.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ol>
+          <div className="ml-eng-code">
+            <p className="ml-eng-kicker">
+              <span className="ml-syn-com">
+                {"// Rm 01 · Marc, the "}
+                {ROOMS.engineering.role.toLowerCase()}
+              </span>
+            </p>
+            <h1 className="ml-eng-title ml-display">
+              <span className="ml-eng-title-text">Engineering</span>
+              <span aria-hidden="true" className="ml-eng-caret" />
+            </h1>
+            <p className="ml-eng-line">{ROOM_COPY.engineering.line}</p>
           </div>
-          <p className="ml-eng-kicker">Sheet A-00 · Title sheet · Marc, the {ROOMS.engineering.role.toLowerCase()}</p>
-          <h1 className="ml-eng-title ml-display">
-            <span className="ml-eng-title-text">Engineering</span>
-            <span aria-hidden="true" className="ml-eng-caret" />
-          </h1>
-          <div className="ml-eng-foot">
-          <p className="ml-eng-line">{ROOM_COPY.engineering.line}</p>
-
-          <dl className="ml-eng-block" aria-label="Title block">
-            <div><dt>Project</dt><dd>The Many Lives</dd></div>
-            <div><dt>Drawn by</dt><dd>Marc Uy Dagatan</dd></div>
-            <div><dt>Discipline</dt><dd>Systems, teams, AI</dd></div>
-            <div><dt>Sheets</dt><dd>{pad(pieces.length)}</dd></div>
-            {newest ? <div><dt>Last issued</dt><dd>{newest.displayDate}</dd></div> : null}
-            <div><dt>Scale</dt><dd>1 : 1</dd></div>
-          </dl>
-          </div>
         </div>
+        <dl className="ml-eng-status" aria-label="Repository status">
+          <div className="ml-wrap">
+            <div><dt>Branch</dt><dd>main</dd></div>
+            <div><dt>Commits</dt><dd>{pieces.length}</dd></div>
+            {newest ? <div><dt>Last commit</dt><dd><time dateTime={newest.dateISO}>{newest.displayDate}</time></dd></div> : null}
+            <div><dt>Scope</dt><dd>systems, teams, AI</dd></div>
+            <div className="ml-eng-status-ok"><dt>Checks</dt><dd>passing</dd></div>
+          </div>
+        </dl>
       </PointerField>
 
-      <section className="ml-wrap ml-eng-notes" aria-labelledby="ml-eng-notes-title">
-        <div className="ml-eng-notes-intro ml-reveal">
-          <h2 id="ml-eng-notes-title" className="ml-eng-h2">
-            <span className="ml-eng-h2-tag">01</span>General notes
+      <section id="ml-eng-readme" className="ml-wrap ml-eng-readme" aria-labelledby="ml-eng-readme-title">
+        <div className="ml-eng-readme-intro ml-reveal">
+          <h2 id="ml-eng-readme-title" className="ml-eng-h2">
+            <span aria-hidden="true" className="ml-eng-file">md</span>README.md
           </h2>
           {ROOM_COPY.engineering.manifesto.map((paragraph) => (
             <p key={paragraph} className="ml-eng-para">{paragraph}</p>
           ))}
         </div>
-        <ol className="ml-eng-notes-list">
-          {ENGINEERING_NOTES.map((note, index) => (
-            <li key={note} className="ml-reveal" style={{ "--i": index } as React.CSSProperties}>
-              <span className="ml-eng-note-n">N{index + 1}</span>
-              <span>{note}</span>
-            </li>
-          ))}
-        </ol>
+        <figure className="ml-eng-codefile ml-reveal" aria-labelledby="ml-eng-principles-title">
+          <figcaption id="ml-eng-principles-title" className="ml-eng-codefile-name">
+            <span aria-hidden="true" className="ml-eng-file">ts</span>principles.ts
+          </figcaption>
+          <div className="ml-eng-codefile-body">
+            <p aria-hidden="true" className="ml-eng-ln">
+              <span className="ml-syn-kw">export const</span> <span className="ml-syn-fn">principles</span> = [
+            </p>
+            <ol className="ml-eng-principles">
+              {ENGINEERING_NOTES.map((note) => (
+                <li key={note} className="ml-eng-ln">
+                  <span className="ml-syn-str">{note}</span>
+                </li>
+              ))}
+            </ol>
+            <p aria-hidden="true" className="ml-eng-ln">
+              ] <span className="ml-syn-kw">as const</span>;
+            </p>
+          </div>
+        </figure>
       </section>
 
       {featured ? (
-        <section className="ml-wrap ml-eng-detail" aria-labelledby="ml-eng-detail-title">
-          <div className="ml-eng-detail-head ml-reveal">
-            <h2 id="ml-eng-detail-title" className="ml-eng-h2">
-              <span className="ml-eng-h2-tag">02</span>Detail A: the lead sheet
-            </h2>
-            <span aria-hidden="true" className="ml-eng-callout">A</span>
-          </div>
-          <div className="ml-eng-detail-body">
-            <article className="ml-eng-feature ml-reveal">
-              <p className="ml-eng-feature-meta">
-                {featured.displayDate} · {featured.format} · {featured.readingTime} min · {featured.sections} sections
+        <section id="ml-eng-head" className="ml-wrap ml-eng-head" aria-labelledby="ml-eng-head-title">
+          <h2 id="ml-eng-head-title" className="ml-eng-h2 ml-reveal">
+            <span aria-hidden="true" className="ml-eng-file">git</span>HEAD: the latest piece
+          </h2>
+          <div className="ml-eng-head-body">
+            <article className="ml-eng-commit ml-reveal">
+              <p className="ml-eng-commit-meta">
+                <span className="ml-eng-hash">{shortHash(featured.slug)}</span>
+                <span className="ml-eng-ref">HEAD → main</span>
+                <time dateTime={featured.dateISO}>{featured.displayDate}</time>
               </p>
-              <h3 className="ml-eng-feature-title">
+              <h3 className="ml-eng-commit-title">
                 <RoomLink href={postHref(featured.slug)} className="ml-u">
                   {featured.title}
                 </RoomLink>
               </h3>
               <p className="ml-eng-para">{featured.description}</p>
+              <ul className="ml-eng-checks" aria-label="Checks">
+                <li><span className="ml-eng-check-name">read time</span>{featured.readingTime} min</li>
+                <li><span className="ml-eng-check-name">sections</span>{featured.sections || 1}</li>
+                <li><span className="ml-eng-check-name">words</span>{featured.words.toLocaleString("en-US")}</li>
+                <li><span className="ml-eng-check-name">format</span>{featured.format}</li>
+              </ul>
               <RoomLink href={postHref(featured.slug)} className="ml-eng-button">
-                Open the sheet <span aria-hidden="true">→</span>
+                Open {featured.slug}.mdx <span aria-hidden="true">→</span>
               </RoomLink>
             </article>
             <RouterDiagram />
@@ -99,73 +141,63 @@ export function EngineeringRoom({ pieces, featured }: RoomProps) {
         </section>
       ) : null}
 
-      <section className="ml-wrap ml-eng-register" aria-labelledby="ml-eng-register-title">
-        <h2 id="ml-eng-register-title" className="ml-eng-h2 ml-reveal">
-          <span className="ml-eng-h2-tag">03</span>Drawing register
+      <section id="ml-eng-log" className="ml-wrap ml-eng-log" aria-labelledby="ml-eng-log-title">
+        <h2 id="ml-eng-log-title" className="ml-eng-h2 ml-reveal">
+          <span aria-hidden="true" className="ml-eng-file">$</span>git log
         </h2>
-        <div className="ml-eng-table-wrap ml-reveal">
-          <table className="ml-eng-table">
-            <thead>
-              <tr>
-                <th scope="col">Sheet</th>
-                <th scope="col">Title</th>
-                <th scope="col" className="ml-eng-col-opt">Type</th>
-                <th scope="col" className="ml-eng-col-opt">Sections</th>
-                <th scope="col">Min</th>
-                <th scope="col" className="ml-eng-col-opt">Issued</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pieces.map((piece, index) => (
-                <tr key={piece.slug} style={{ "--i": index } as React.CSSProperties}>
-                  <td className="ml-eng-sheet">A-{pad(index + 1)}</td>
-                  <td>
-                    <RoomLink href={postHref(piece.slug)} className="ml-eng-row-link">
-                      {piece.title}
-                    </RoomLink>
-                    {piece.room !== "engineering" ? (
-                      <span className="ml-eng-xref"> (cross-ref, {ROOMS[piece.room].name})</span>
-                    ) : null}
-                  </td>
-                  <td className="ml-eng-col-opt">{piece.format}</td>
-                  <td className="ml-eng-col-opt">{piece.sections || "—"}</td>
-                  <td>{piece.readingTime}</td>
-                  <td className="ml-eng-col-opt">
-                    <time dateTime={piece.dateISO}>{piece.displayDate}</time>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <p className="ml-eng-cmd ml-reveal" aria-hidden="true">
+          <span className="ml-eng-prompt">$</span> git log --oneline --graph
+        </p>
+        <ol className="ml-eng-commits ml-reveal">
+          {pieces.map((piece, index) => (
+            <li key={piece.slug}>
+              <RoomLink href={postHref(piece.slug)} className="ml-eng-commit-row">
+                <span className="ml-eng-hash">{shortHash(piece.slug)}</span>
+                <span className="ml-eng-commit-text">
+                  {index === 0 ? <span className="ml-eng-ref">HEAD → main</span> : null}
+                  {piece.room !== "engineering" ? (
+                    <span className="ml-eng-ref ml-eng-ref-remote" data-room={piece.room}>
+                      <span aria-hidden="true" className="ml-swatch" />
+                      origin/{piece.room}
+                    </span>
+                  ) : null}
+                  <span className="ml-eng-commit-subject">{piece.title}</span>
+                </span>
+                <span className="ml-eng-commit-when">
+                  <time dateTime={piece.dateISO}>{piece.displayDate}</time>
+                  <span>{piece.readingTime} min</span>
+                </span>
+              </RoomLink>
+            </li>
+          ))}
+        </ol>
       </section>
 
-      <section className="ml-wrap ml-eng-bom" aria-labelledby="ml-eng-bom-title">
-        <h2 id="ml-eng-bom-title" className="ml-eng-h2 ml-reveal">
-          <span className="ml-eng-h2-tag">04</span>Bill of materials
+      <section id="ml-eng-deps" className="ml-wrap ml-eng-deps" aria-labelledby="ml-eng-deps-title">
+        <h2 id="ml-eng-deps-title" className="ml-eng-h2 ml-reveal">
+          <span aria-hidden="true" className="ml-eng-file">{"{}"}</span>package.json
         </h2>
-        <p className="ml-eng-para ml-eng-bom-note ml-reveal">
-          What the work is actually built from, per the CV. Not exhaustive, not aspirational.
+        <p className="ml-eng-para ml-eng-deps-note ml-reveal">
+          <span className="ml-syn-com">
+            {"// What the work is actually built from, per the CV. Not exhaustive, not aspirational."}
+          </span>
         </p>
-        <div className="ml-eng-bom-grid">
-          {materials.map((group, groupIndex) => (
-            <div key={group.label} className="ml-eng-bom-group ml-reveal">
-              <h3 className="ml-eng-bom-label">
-                <span>{String.fromCharCode(65 + groupIndex)}</span>
-                {group.label}
-              </h3>
-              <ul>
-                {group.items.map((item, index) => (
-                  <li key={item}>
-                    <span className="ml-eng-bom-n">{pad(index + 1)}</span>
-                    {item}
-                  </li>
+        <div className="ml-eng-deps-grid">
+          {dependencies.map((group) => (
+            <div key={group.label} className="ml-eng-dep ml-reveal">
+              <h3 className="ml-eng-dep-label">{group.label}</h3>
+              <ul className="ml-eng-tree">
+                {group.items.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
               </ul>
             </div>
           ))}
         </div>
-        <p className="ml-eng-endset ml-reveal">End of set. Revisions issued as they happen.</p>
+        <p className="ml-eng-exit ml-reveal">
+          <span className="ml-eng-prompt" aria-hidden="true">$</span> exit 0
+          <span className="ml-eng-exit-note">Process finished with exit code 0. New commits land as they happen.</span>
+        </p>
       </section>
     </>
   );

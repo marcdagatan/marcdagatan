@@ -88,7 +88,7 @@ export const ROOM_COPY: Record<RoomId, { line: string; manifesto: string[] }> = 
 
 /* Engineering --------------------------------------------------------------- */
 
-/** "General notes" on the drawing set. Beliefs from the About page. */
+/** `principles.ts` in the room's README. Beliefs from the About page. */
 export const ENGINEERING_NOTES = [
   "Models do not govern themselves; someone has to own the rules.",
   "Bad decisions usually look reasonable at first.",
@@ -97,34 +97,42 @@ export const ENGINEERING_NOTES = [
   "Route before you reason.",
 ];
 
-/** The Skills Router, layer by layer, paraphrased from the Skills Router post. */
+/**
+ * The Skills Router as a request flow, paraphrased from the Skills Router
+ * post. `node` is the hop a request passes through at each layer.
+ */
 export const ROUTER_LAYERS = [
   {
     id: "governance",
+    node: "rules",
     name: "Governance",
     tag: "The constitution",
     body: "Retrieval first, by default. Project-local rules beat global skills, and global skills beat model priors.",
   },
   {
     id: "routing",
+    node: "router",
     name: "Routing",
     tag: "Minimal context on purpose",
     body: "Each SKILL.md is a router that picks the smallest set of leaf docs for the request. No Flutter rules while fixing a Next.js action.",
   },
   {
     id: "execution",
+    node: "skill",
     name: "Execution",
     tag: "Agents are roles",
     body: "An agent is a permissions profile, a temperature, and a scope. Choosing one is an authorization decision.",
   },
   {
     id: "enforcement",
+    node: "guard",
     name: "Enforcement",
     tag: "Stop the world",
     body: "SkillGuard blocks file edits until skills are loaded. A suggestion becomes a gate.",
   },
   {
     id: "quality",
+    node: "verify",
     name: "Quality",
     tag: "Routing must be lintable",
     body: "Router references, leaves, and headings are machine-checked, so the control plane cannot drift silently.",

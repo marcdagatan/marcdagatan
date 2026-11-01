@@ -117,31 +117,44 @@
   padding-left: 14px;
 }
 
-/* Engineering: the nav becomes a drawing title block. */
+/* Engineering: the nav becomes an editor title bar with a shell prompt and
+   room links as tabs. */
 .ml-root[data-theme="engineering"] .ml-nav {
   font-family: var(--ml-mono);
-  border-bottom-color: color-mix(in srgb, var(--t-nav-ink) 35%, transparent);
+  border-bottom-color: #24302a;
 }
 .ml-root[data-theme="engineering"] .ml-nav-mark {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+}
+.ml-root[data-theme="engineering"] .ml-nav-mark::before {
+  content: "❯ " / "";
+  color: var(--t-field-accent);
 }
 .ml-root[data-theme="engineering"] .ml-nav-badge {
-  border: 1px solid color-mix(in srgb, var(--t-nav-ink) 45%, transparent);
   padding: 1px 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  border: 1px solid #2c3a33;
+  border-radius: 999px;
+  color: var(--t-field-accent);
   font-size: 11px;
-  animation: ml-badge-type 0.7s steps(12) both;
+  opacity: 1;
+  animation: ml-badge-type 0.7s steps(14) both;
 }
 .ml-root[data-theme="engineering"] .ml-nav-link {
   font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-left: 1px solid color-mix(in srgb, var(--t-nav-ink) 22%, transparent);
-  padding-inline: 12px;
+  padding: 8px 12px;
+  border-radius: 4px 4px 0 0;
+  transition: background-color 0.2s ease;
+}
+.ml-root[data-theme="engineering"] .ml-nav-link[aria-current] {
+  background: rgb(230 235 231 / 0.07);
+  box-shadow: inset 0 2px 0 var(--t-field-accent);
+}
+.ml-root[data-theme="engineering"] .ml-nav-link .ml-nav-label {
+  background-image: none;
+}
+.ml-root[data-theme="engineering"] .ml-nav-link:hover {
+  background: rgb(230 235 231 / 0.05);
 }
 
 @keyframes ml-badge-type {
@@ -304,18 +317,13 @@
   }
 }
 
-/* Engineering: a ruler that fills as you read. */
+/* Engineering: a thin build bar. */
 .ml-root[data-theme="engineering"] .ml-progress {
-  height: 12px;
-  background:
-    repeating-linear-gradient(to right, color-mix(in srgb, var(--t-accent) 70%, transparent) 0 1px, transparent 1px 8px) 0 0 / 100% 5px no-repeat,
-    repeating-linear-gradient(to right, var(--t-accent) 0 1px, transparent 1px 80px) 0 0 / 100% 10px no-repeat;
+  height: 3px;
+  background: rgb(110 231 160 / 0.14);
 }
 .ml-root[data-theme="engineering"] .ml-progress-fill {
-  top: 0;
-  height: 3px;
-  bottom: auto;
-  background: #ff5a36;
+  background: var(--t-field-accent);
 }
 
 /* Ring: twelve round segments. */
@@ -386,50 +394,23 @@
   display: block;
 }
 
-/* Engineering: sheet rulers that draw themselves, plus a slow scan line. */
-.ml-root .ml-ov-ruler-x {
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 14px;
-  background:
-    repeating-linear-gradient(to right, color-mix(in srgb, var(--t-accent) 55%, transparent) 0 1px, transparent 1px 10px) 0 100% / 100% 6px no-repeat,
-    repeating-linear-gradient(to right, var(--t-accent) 0 1px, transparent 1px 100px) 0 100% / 100% 14px no-repeat;
-  transform-origin: left;
-}
-
-.ml-root .ml-ov-ruler-y {
+/* Engineering: static diff markers down the left gutter. */
+.ml-root .ml-ov-diffbar {
   top: 0;
   bottom: 0;
   left: 0;
-  width: 14px;
-  background:
-    repeating-linear-gradient(to bottom, color-mix(in srgb, var(--t-accent) 55%, transparent) 0 1px, transparent 1px 10px) 0 0 / 6px 100% no-repeat,
-    repeating-linear-gradient(to bottom, var(--t-accent) 0 1px, transparent 1px 100px) 0 0 / 14px 100% no-repeat;
-  transform-origin: top;
-}
-
-.ml-root .ml-ov-scan {
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(to right, transparent, #4f7dff 20%, #4f7dff 80%, transparent);
-  box-shadow: 0 0 14px 2px rgb(79 125 255 / 0.35);
-  opacity: 0.35;
-}
-
-.ml-root[data-theme="engineering"] .ml-ov-ruler-x {
-  animation: ml-draw-x 1.1s var(--ml-ease-out) 0.15s both;
-}
-.ml-root[data-theme="engineering"] .ml-ov-ruler-y {
-  animation: ml-draw-y 1.1s var(--ml-ease-out) 0.3s both;
-}
-.ml-root[data-theme="engineering"] .ml-ov-scan {
-  animation: ml-scan 9s linear infinite;
-}
-.ml-root[data-kind="essay"] .ml-ov-scan {
-  display: none;
+  width: 3px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0 22%,
+    #2da44e 22% 27%,
+    transparent 27% 48%,
+    #6d3fd1 48% 50%,
+    transparent 50% 71%,
+    #2da44e 71% 79%,
+    transparent 79%
+  );
+  opacity: 0.7;
 }
 
 @keyframes ml-draw-x {
@@ -439,10 +420,6 @@
 @keyframes ml-draw-y {
   from { transform: scaleY(0); }
   to { transform: scaleY(1); }
-}
-@keyframes ml-scan {
-  from { transform: translateY(0); }
-  to { transform: translateY(100vh); }
 }
 
 /* Ring: ropes snap tight along the bottom edge; corners print in halftone. */
@@ -601,11 +578,12 @@
   to { opacity: 1; transform: none; }
 }
 
+/* Engineering prints in top down, a few lines at a time, like output. */
 .ml-root[data-route="engineering"] .ml-stage {
-  animation: ml-plot-in 0.9s var(--ml-ease-out) backwards;
+  animation: ml-eng-print 0.6s steps(10, end) backwards;
 }
-@keyframes ml-plot-in {
-  from { clip-path: inset(0 100% 0 0); }
+@keyframes ml-eng-print {
+  from { clip-path: inset(0 0 100% 0); }
   to { clip-path: inset(0 0 0 0); }
 }
 

@@ -31,9 +31,9 @@ export const ROOMS: Record<RoomId, Room> = {
     name: "Engineering",
     role: "Founder",
     topics: ["ai", "governance", "engineering", "tools", "hiring", "leadership", "entrepreneurship"],
-    badge: "Drawing set",
-    field: "#1f3fa8",
-    ink: "#f2f5ff",
+    badge: "On branch main",
+    field: "#101815",
+    ink: "#6ee7a0",
   },
   ring: {
     id: "ring",
@@ -142,7 +142,7 @@ export function resolveKind(pathname: string): "home" | "house" | "room" | "essa
   return "page";
 }
 
-/** Two-digit sheet/reel numbering used across rooms. */
+/** Two-digit numbering (reels, bouts, entries) used across rooms. */
 export function pad(value: number): string {
   return String(value).padStart(2, "0");
 }

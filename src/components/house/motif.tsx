@@ -1,16 +1,17 @@
 import type { RoomId } from "./rooms";
 
 /**
- * Each room's drawn texture: a blueprint routing diagram, a ring corner, a
- * film strip with a projector beam, and growth rings. Strokes use
+ * Each room's drawn texture: an editor minimap and a code snippet, a ring
+ * corner, a film strip with a projector beam, and growth rings. Strokes use
  * currentColor so the same art works lit and unlit. Purely decorative.
  */
 export function RoomMotif({ room, detail = true }: { room: RoomId; detail?: boolean }) {
   switch (room) {
     case "engineering":
       return (
-        <div aria-hidden="true" className="ml-motif ml-motif-grid">
-          {detail ? <RoutingDiagram /> : null}
+        <div aria-hidden="true" className="ml-motif ml-motif-code">
+          <Minimap />
+          {detail ? <CodeSnippet /> : null}
         </div>
       );
     case "ring":
@@ -22,25 +23,40 @@ export function RoomMotif({ room, detail = true }: { room: RoomId; detail?: bool
   }
 }
 
-/** The Skills Router, drawn as a blueprint. */
-function RoutingDiagram() {
+/** Minimap rows: indent, width and syntax role, like a file seen from far off. */
+const MINIMAP: [number, number, "kw" | "fn" | "str" | "com" | "ink"][] = [
+  [0, 46, "com"], [0, 30, "kw"], [0, 0, "ink"], [0, 58, "kw"], [8, 70, "fn"],
+  [8, 44, "str"], [16, 52, "ink"], [16, 36, "str"], [8, 22, "ink"], [0, 12, "ink"],
+  [0, 0, "ink"], [0, 64, "com"], [0, 50, "kw"], [8, 76, "fn"], [16, 40, "str"],
+  [16, 60, "ink"], [8, 28, "kw"], [0, 12, "ink"], [0, 0, "ink"], [0, 38, "kw"],
+  [8, 54, "fn"], [8, 34, "ink"], [0, 12, "ink"],
+];
+
+function Minimap() {
   return (
-    <svg className="ml-motif-diagram" viewBox="-2 0 302 122" fill="none">
-      <g stroke="currentColor" strokeWidth="1.25" strokeOpacity="0.7">
-        <rect x="0" y="45" width="80" height="32" />
-        <rect x="112" y="4" width="72" height="30" />
-        <rect x="112" y="88" width="72" height="30" />
-        <rect x="220" y="45" width="78" height="32" />
-        <path className="ml-trace" d="M80 61 H96 V19 H112" />
-        <path className="ml-trace" d="M96 61 V103 H112" />
-        <path className="ml-trace" d="M184 19 H202 V61 H220" />
-        <path className="ml-trace" d="M184 103 H202 V61" />
-      </g>
-      <g fill="currentColor" fillOpacity="0.8" fontFamily="var(--ml-font-engineering), monospace" fontSize="11">
-        <text x="12" y="65">router</text>
-        <text x="124" y="23">skill</text>
-        <text x="124" y="107">skill</text>
-        <text x="232" y="65">verify</text>
+    <svg className="ml-motif-minimap" viewBox="0 0 100 184" preserveAspectRatio="xMaxYMin meet">
+      {MINIMAP.map(([indent, width, role], index) =>
+        width ? (
+          <rect key={index} className={`ml-mm ml-mm-${role}`} x={indent} y={index * 8} width={width} height="4" rx="1" />
+        ) : null,
+      )}
+    </svg>
+  );
+}
+
+/** A few lines of the Skills Router, the way they would sit in an editor. */
+function CodeSnippet() {
+  return (
+    <svg className="ml-motif-snippet" viewBox="0 0 300 96" fill="currentColor">
+      <g fontFamily="var(--ml-font-engineering), monospace" fontSize="12">
+        <text x="0" y="14" className="ml-mm-com">{"// route a request to a skill"}</text>
+        <text x="0" y="38">
+          <tspan className="ml-mm-kw">const</tspan> <tspan className="ml-mm-fn">route</tspan> = (req) =&gt;
+        </text>
+        <text x="16" y="60">
+          <tspan className="ml-mm-fn">pick</tspan>(skills, req).<tspan className="ml-mm-fn">verify</tspan>();
+        </text>
+        <text x="0" y="86" className="ml-mm-str">{"$ exit 0"}</text>
       </g>
     </svg>
   );

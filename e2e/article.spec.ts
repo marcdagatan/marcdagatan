@@ -25,8 +25,8 @@ test("long essay: title, a table of contents whose anchors resolve, and structur
     page.getByRole("heading", { level: 1, name: /The Skills Router/ })
   ).toBeVisible();
 
-  // The engineering room labels its TOC as a spec index.
-  const toc = page.getByRole("navigation", { name: "Spec index" });
+  // The engineering room labels its TOC as an editor outline.
+  const toc = page.getByRole("navigation", { name: "Outline" });
   await expect(toc).toBeVisible();
   const tocLinks = toc.getByRole("link");
   expect(await tocLinks.count()).toBeGreaterThanOrEqual(3);

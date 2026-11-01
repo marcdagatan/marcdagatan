@@ -4,6 +4,7 @@ import type { Piece } from "../data";
 import { Door } from "../door";
 import { PointerField } from "../pointer-field";
 import { RoomLink } from "../room-link";
+import { shortHash } from "../engineering/git";
 import { pad, ROOMS, roomHref, type RoomId } from "../rooms";
 
 export type EssayInfo = {
@@ -81,25 +82,33 @@ export function EssayHero({ room, info }: { room: RoomId; info: EssayInfo }) {
   if (room === "engineering") {
     return (
       <PointerField className="ml-ess-hero ml-eng-hero ml-hero-morph">
-        <div aria-hidden="true" className="ml-eng-grid" />
-        <div aria-hidden="true" className="ml-eng-cross">
-          <span className="ml-eng-cross-x" />
-          <span className="ml-eng-cross-y" />
+        <div aria-hidden="true" className="ml-eng-tabs">
+          <ul className="ml-wrap">
+            <li>
+              <span className="ml-eng-tab" data-active="true">
+                engineering/{piece.slug}.mdx
+              </span>
+            </li>
+          </ul>
         </div>
+        <div aria-hidden="true" className="ml-eng-linehl" />
         <div className="ml-wrap ml-eng-hero-inner">
-          <BackToRoom room={room} label="Drawing set" />
+          <BackToRoom room={room} label="cd ../engineering" />
           <p className="ml-eng-kicker">
-            Sheet A-{pad(info.number)} · {piece.format}
+            <span className="ml-syn-com">
+              {"// commit "}
+              {shortHash(piece.slug)} · {piece.format} · #{pad(info.number)}
+            </span>
           </p>
           <h1 className="ml-ess-title ml-display">{piece.title}</h1>
           <p className="ml-ess-desc">{piece.description}</p>
-          <dl className="ml-eng-block" aria-label="Title block">
-            <div><dt>Issued</dt><dd><time dateTime={piece.dateISO}>{piece.displayDate}</time></dd></div>
-            {info.updatedDisplayDate ? <div><dt>Revised</dt><dd>{info.updatedDisplayDate}</dd></div> : null}
-            <div><dt>Sections</dt><dd>{sections || "—"}</dd></div>
+          <dl className="ml-eng-meta">
+            <div><dt>Committed</dt><dd><time dateTime={piece.dateISO}>{piece.displayDate}</time></dd></div>
+            {info.updatedDisplayDate ? <div><dt>Amended</dt><dd>{info.updatedDisplayDate}</dd></div> : null}
+            <div><dt>Sections</dt><dd>{sections || 1}</dd></div>
             <div><dt>Words</dt><dd>{piece.words.toLocaleString("en-US")}</dd></div>
-            <div><dt>Est. read</dt><dd>{piece.readingTime} min</dd></div>
-            <AlsoIn rooms={info.alsoIn} label="Cross-ref" />
+            <div><dt>Read</dt><dd>{piece.readingTime} min</dd></div>
+            <AlsoIn rooms={info.alsoIn} label="Also in" />
             <Topics topics={piece.topics} label="Tags" />
           </dl>
           <HeaderPlate piece={piece} />

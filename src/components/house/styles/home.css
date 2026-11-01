@@ -520,49 +520,61 @@
   transition: color 0.45s ease;
 }
 
-.ml-root .ml-motif-grid {
-  background-image:
-    linear-gradient(color-mix(in srgb, currentColor 22%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, currentColor 22%, transparent) 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, currentColor 9%, transparent) 1px, transparent 1px);
-  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
-  background-position: -1px -1px;
-  transition:
-    background-position 1s var(--ml-ease-out),
-    color 0.45s ease;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .ml-root .ml-tile:hover .ml-motif-grid {
-    background-position: 23px 23px;
-  }
-}
-
-.ml-root .ml-motif-diagram {
+/* Engineering: an editor minimap down the right edge and, on full tiles, a
+   code snippet. Unlit it is monochrome; lit, the syntax colors come up. */
+.ml-root .ml-motif-minimap {
   position: absolute;
-  right: 7%;
-  bottom: 18%;
-  width: 42%;
-  max-width: 340px;
+  right: 6%;
+  top: 18%;
+  width: 9%;
+  max-width: 80px;
+  height: 64%;
+}
+
+.ml-root .ml-motif-snippet {
+  position: absolute;
+  right: 20%;
+  bottom: 16%;
+  width: 40%;
+  max-width: 320px;
   display: none;
 }
 
 @media (min-width: 640px) {
-  .ml-root .ml-motif-diagram { display: block; }
+  .ml-root .ml-motif-snippet { display: block; }
 }
 
-.ml-root .ml-trace {
-  stroke-dasharray: 5 5;
+.ml-root .ml-mm {
+  fill: currentColor;
+  fill-opacity: 0.22;
+  transition: fill 0.45s ease, fill-opacity 0.45s ease;
 }
 
-.ml-root .ml-tile:hover .ml-trace,
-.ml-root .ml-trace-live .ml-trace {
-  animation: ml-flow 0.9s linear infinite;
+.ml-root .ml-motif-snippet text,
+.ml-root .ml-motif-snippet tspan {
+  fill-opacity: 0.75;
+  transition: fill 0.45s ease, fill-opacity 0.45s ease;
 }
 
-@keyframes ml-flow {
-  to { stroke-dashoffset: -20; }
+.ml-root .ml-tile:is(:hover, :focus-within) .ml-mm,
+.ml-root .ml-nextdoor-tile:is(:hover, :focus-within) .ml-mm {
+  fill-opacity: 0.55;
+}
+
+.ml-root .ml-tile:is(:hover, :focus-within) .ml-motif-snippet :is(text, tspan) {
+  fill-opacity: 1;
+}
+
+.ml-root :is(.ml-tile, .ml-nextdoor-tile):is(:hover, :focus-within) .ml-mm-kw { fill: var(--eng-d-kw); }
+.ml-root :is(.ml-tile, .ml-nextdoor-tile):is(:hover, :focus-within) .ml-mm-fn { fill: var(--eng-d-fn); }
+.ml-root :is(.ml-tile, .ml-nextdoor-tile):is(:hover, :focus-within) .ml-mm-str { fill: var(--eng-d-str); }
+.ml-root :is(.ml-tile, .ml-nextdoor-tile):is(:hover, :focus-within) .ml-mm-com { fill: var(--eng-d-com); }
+
+@media (hover: none) {
+  .ml-root .ml-tile .ml-mm-kw { fill: var(--eng-d-kw); }
+  .ml-root .ml-tile .ml-mm-fn { fill: var(--eng-d-fn); }
+  .ml-root .ml-tile .ml-mm-str { fill: var(--eng-d-str); }
+  .ml-root .ml-tile .ml-mm-com { fill: var(--eng-d-com); }
 }
 
 .ml-root .ml-motif-post {

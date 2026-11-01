@@ -27,7 +27,7 @@ function currentFor(pathname: string, href: string, themed: boolean): "page" | "
 
 /**
  * The shared nav. One structure everywhere; each room restyles it in CSS
- * (sheet title block, fight-card bar, letterbox strip, notebook header).
+ * (editor title bar, fight-card bar, letterbox strip, notebook header).
  */
 export function ShellNav() {
   const { theme } = useShell();
@@ -111,9 +111,7 @@ export function ShellOverlays() {
   return (
     <div aria-hidden="true" className="ml-overlays">
       <div className="ml-ov ml-ov-engineering">
-        <span className="ml-ov-ruler ml-ov-ruler-x" />
-        <span className="ml-ov-ruler ml-ov-ruler-y" />
-        <span className="ml-ov-scan" />
+        <span className="ml-ov-diffbar" />
       </div>
       <div className="ml-ov ml-ov-ring">
         <span className="ml-ov-rope" />

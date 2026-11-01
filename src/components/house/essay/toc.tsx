@@ -7,21 +7,21 @@ import { pad, type RoomId } from "../rooms";
 export const ARTICLE_ID = "ml-article";
 
 const TITLES: Record<RoomId, string> = {
-  engineering: "Spec index",
+  engineering: "Outline",
   ring: "Rounds",
   screen: "Scene list",
   life: "In this entry",
 };
 
 const EMPTY: Record<RoomId, string> = {
-  engineering: "Single sheet. No sections.",
+  engineering: "One file, no sections.",
   ring: "One long round. No bell until the end.",
   screen: "One continuous take.",
   life: "One page, no breaks.",
 };
 
 function label(room: RoomId, index: number): string {
-  if (room === "engineering") return `§${pad(index + 1)}`;
+  if (room === "engineering") return `#${index + 1}`;
   if (room === "ring") return `R${index + 1}`;
   if (room === "screen") return `Sc.${pad(index + 1)}`;
   return `${index + 1}.`;

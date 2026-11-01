@@ -4,7 +4,7 @@ import { postHref, ROOMS, type RoomId } from "../rooms";
 export type MoreLink = { slug: string; title: string; room: RoomId; displayDate: string; readingTime: number };
 
 const LABELS: Record<RoomId, { related: string; older: string; newer: string }> = {
-  engineering: { related: "Referenced sheets", older: "Previous sheet", newer: "Next sheet" },
+  engineering: { related: "See also", older: "Older commit", newer: "Newer commit" },
   ring: { related: "Also on the card", older: "Previous bout", newer: "Next bout" },
   screen: { related: "Coming attractions", older: "Previous reel", newer: "Next reel" },
   life: { related: "Other pages", older: "Earlier page", newer: "Later page" },

@@ -1,8 +1,9 @@
+import { shortHash } from "../engineering/git";
 import type { RoomId } from "../rooms";
 import type { EssayInfo } from "./heroes";
 
 /**
- * How each room closes a piece: a revision block, the final bell, a credits
+ * How each room closes a piece: a commit footer, the final bell, a credits
  * roll, or a signed note.
  */
 export function EssayEnding({ room, info }: { room: RoomId; info: EssayInfo }) {
@@ -10,37 +11,34 @@ export function EssayEnding({ room, info }: { room: RoomId; info: EssayInfo }) {
 
   if (room === "engineering") {
     return (
-      <section className="ml-wrap ml-end ml-end-eng" aria-label="End of specification">
+      <section className="ml-wrap ml-end ml-end-eng" aria-label="End of file">
         <div className="ml-end-eng-inner ml-reveal">
-          <p className="ml-end-eng-title">End of specification</p>
-          <table className="ml-eng-table ml-end-eng-table">
-            <thead>
-              <tr>
-                <th scope="col">Rev</th>
-                <th scope="col">Date</th>
-                <th scope="col">Description</th>
-                <th scope="col">By</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>A</td>
-                <td>{piece.displayDate}</td>
-                <td>Issued for reading</td>
-                <td>MUD</td>
-              </tr>
-              {info.updatedDisplayDate ? (
-                <tr>
-                  <td>B</td>
-                  <td>{info.updatedDisplayDate}</td>
-                  <td>Revised after it met reality</td>
-                  <td>MUD</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
-          <p className="ml-end-eng-check">
-            Checked by: <span>you, hopefully</span>
+          <p aria-hidden="true" className="ml-end-eng-cmd">
+            <span className="ml-eng-prompt">$</span> git log -1
+          </p>
+          <dl className="ml-end-eng-commit">
+            <div>
+              <dt>commit</dt>
+              <dd>
+                <span className="ml-eng-hash">{shortHash(piece.slug)}</span>
+                {info.number === 1 ? (
+                  <>
+                    {" "}
+                    <span className="ml-eng-ref">HEAD → main</span>
+                  </>
+                ) : null}
+              </dd>
+            </div>
+            <div><dt>Author:</dt><dd>Marc Uy Dagatan</dd></div>
+            <div><dt>Date:</dt><dd><time dateTime={piece.dateISO}>{piece.displayDate}</time></dd></div>
+            {info.updatedDisplayDate ? <div><dt>Amended:</dt><dd>{info.updatedDisplayDate}, after it met reality</dd></div> : null}
+          </dl>
+          <p className="ml-end-eng-subject">{piece.title}</p>
+          <p className="ml-end-eng-trailer">
+            Reviewed-by: <span>you, hopefully</span>
+          </p>
+          <p className="ml-end-eng-exit">
+            <span className="ml-eng-prompt" aria-hidden="true">$</span> exit 0
           </p>
         </div>
       </section>

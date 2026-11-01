@@ -4,7 +4,7 @@ import { useRef } from "react";
 
 /**
  * Publishes the pointer position inside this element as --px/--py (0..1)
- * for CSS-driven cursor effects: drafting crosshairs, projector spotlights.
+ * for CSS-driven cursor effects: an editor line highlight, projector spotlights.
  */
 export function PointerField({
   className,

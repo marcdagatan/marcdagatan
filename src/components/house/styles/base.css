@@ -65,17 +65,17 @@
 
 .ml-root[data-theme="engineering"],
 .ml-root [data-room="engineering"] {
-  --t-bg: #e8ecf6;
-  --t-surface: #dde3f2;
-  --t-ink: #0f1a3d;
-  --t-muted: #46527a;
-  --t-accent: #1f3fa8;
-  --t-line: #a9b5dc;
-  --t-field: #1f3fa8;
-  --t-field-ink: #f2f5ff;
-  --t-field-accent: #a9d4ff;
-  --t-nav-bg: #1f3fa8;
-  --t-nav-ink: #f2f5ff;
+  --t-bg: #fdfdfc;
+  --t-surface: #f0f2f0;
+  --t-ink: #1b1f1d;
+  --t-muted: #57606a;
+  --t-accent: #6d3fd1;
+  --t-line: #d6dad7;
+  --t-field: #101815;
+  --t-field-ink: #e6ebe7;
+  --t-field-accent: #6ee7a0;
+  --t-nav-bg: #101815;
+  --t-nav-ink: #e6ebe7;
   --t-display: var(--ml-mono);
   --t-display-style: normal;
   --t-display-weight: 600;
@@ -83,6 +83,29 @@
   --t-display-track: -0.045em;
   --t-display-lead: 1;
   --t-body: var(--ml-sans);
+
+  /* Syntax palette: light editor body, dark editor panels, diff hunks. */
+  --eng-kw: #6d3fd1;
+  --eng-fn: #0b6e99;
+  --eng-str: #1a7f37;
+  --eng-num: #a35100;
+  --eng-com: #5f6b66;
+  --eng-d-kw: #c4a5ff;
+  --eng-d-fn: #7dcfff;
+  --eng-d-str: #9ece6a;
+  --eng-d-num: #ff9e64;
+  --eng-d-com: #8a948e;
+  --eng-add-bg: #e3f6e8;
+  --eng-add-fg: #116329;
+  --eng-del-bg: #fde8ea;
+  --eng-del-fg: #a40e26;
+  --syn-kw: var(--eng-kw);
+  --syn-fn: var(--eng-fn);
+  --syn-str: var(--eng-str);
+  --syn-num: var(--eng-num);
+  --syn-com: var(--eng-com);
+  --syn-prompt: var(--t-accent);
+  --syn-ref: var(--eng-fn);
 }
 
 .ml-root[data-theme="ring"],
@@ -209,8 +232,10 @@
   cursor: pointer;
 }
 
-/* Room cursors: drafting crosshair, glove, viewfinder, ink dot. */
-.ml-root[data-theme="engineering"] { cursor: crosshair; }
+/* Room cursors: terminal block caret, glove, viewfinder, ink dot. */
+.ml-root[data-theme="engineering"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='20'%3E%3Crect x='1' y='1' width='10' height='18' fill='%236ee7a0' stroke='%23101815' stroke-width='1.5'/%3E%3C/svg%3E") 1 1, text;
+}
 .ml-root[data-theme="ring"] {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ccircle cx='14' cy='14' r='9' fill='%2315130f' stroke='%23f2c230' stroke-width='3'/%3E%3C/svg%3E") 14 14, auto;
 }
@@ -336,12 +361,12 @@
    border up to 8px plus the largest offset (6px). It sits behind
    the host's content (isolated, z-index -1) so inner links stay clickable. */
 
-.ml-root :is(.ml-eng-button, .ml-router-layer, .ml-eng-bom-group, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout) {
+.ml-root :is(.ml-eng-button, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout) {
   position: relative;
   isolation: isolate;
 }
 
-.ml-root :is(.ml-eng-button, .ml-router-layer, .ml-eng-bom-group, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout):hover::after {
+.ml-root :is(.ml-eng-button, .ml-chip, .ml-house-card, .ml-growth-link, .ml-toc-list a, .ml-timer-controls button, .ml-ring-bout):hover::after {
   content: "";
   position: absolute;
   inset: -16px;
